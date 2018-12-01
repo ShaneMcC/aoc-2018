@@ -3,42 +3,32 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
-	$entries = array();
+	$changes = array();
 	foreach ($input as $details) {
-		preg_match('#([+-])(.*)#SADi', $details, $m);
-		list($all, $dir, $amount) = $m;
-		$entries[] = [$dir, $amount];
+		preg_match('#([+-][0-9]+)#SADi', $details, $m);
+		list($all, $change) = $m;
+		$changes[] = $change;
 	}
 
-	$val = 0;
-	foreach ($entries as $e) {
-		switch ($e[0]) {
-			case "+":
-				$val += $e[1];
-				break;
-			case "-":
-				$val -= $e[1];
-				break;
+	function doFrequencyChanges($changes, &$freq = 0, &$knownValues = []) {
+		foreach ($changes as $c) {
+			$freq += $c;
+
+			if (array_key_exists($freq, $knownValues)) { return true; }
+			$knownValues[$freq] = true;
 		}
+
+		return false;
 	}
 
-	echo 'Part 1: ', $val, "\n";
-
-	$val = 0;
+	$part1 = $part2 = 0;
 	$known = [];
-	while (true) {
-		foreach ($entries as $e) {
-			switch ($e[0]) {
-				case "+":
-					$val += $e[1];
-					break;
-				case "-":
-					$val -= $e[1];
-					break;
-			}
+	doFrequencyChanges($changes, $part1);
+	echo 'Part 1: ', $part1, "\n";
 
-			if (array_key_exists($val, $known)) { break 2; }
-			$known[$val] = true;
+	while (true) {
+		if (doFrequencyChanges($changes, $part2, $known)) {
+			break;
 		}
 	}
-	echo 'Part 2: ', $val, "\n";
+	echo 'Part 2: ', $part2, "\n";
