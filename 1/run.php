@@ -11,7 +11,6 @@
 	}
 
 	$val = 0;
-
 	foreach ($entries as $e) {
 		switch ($e[0]) {
 			case "+":
@@ -24,3 +23,22 @@
 	}
 
 	echo 'Part 1: ', $val, "\n";
+
+	$val = 0;
+	$known = [];
+	while (true) {
+		foreach ($entries as $e) {
+			switch ($e[0]) {
+				case "+":
+					$val += $e[1];
+					break;
+				case "-":
+					$val -= $e[1];
+					break;
+			}
+
+			if (in_array($val, $known)) { break 2; }
+			$known[] = $val;
+		}
+	}
+	echo 'Part 2: ', $val, "\n";
