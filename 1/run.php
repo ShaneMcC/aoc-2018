@@ -37,8 +37,8 @@
 					break;
 			}
 
-			if (in_array($val, $known)) { break 2; }
-			$known[] = $val;
+			if (array_key_exists($val, $known)) { break 2; }
+			$known[$val] = true;
 		}
 	}
 	echo 'Part 2: ', $val, "\n";
