@@ -38,6 +38,7 @@
 
 			if ($result !== FALSE) {
 				echo 'Part 2: ', $result, "\n";
+				break 2;
 			}
 		}
 	}
