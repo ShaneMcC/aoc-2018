@@ -21,6 +21,7 @@ if [ ! -e "/code/${DAY}/run.php" ]; then
 fi;
 
 if [ "${TIME}" = "1" ]; then
+	export TIMED=1
 	time php /code/${DAY}/run.php ${@}
 else
 	php /code/${DAY}/run.php ${@}
