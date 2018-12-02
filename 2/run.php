@@ -4,11 +4,7 @@
 	$boxes = getInputLines();
 
 	function hasMatchingCount($box, $count = 2) {
-		$letters = [];
-		foreach (str_split($box) as $letter) {
-			if (!isset($letters[$letter])) { $letters[$letter] = 0; }
-			$letters[$letter]++;
-		}
+		$letters = array_count_values(str_split($box));
 
 		foreach ($letters as $l => $v) {
 			if ($v == $count) { return true; }
