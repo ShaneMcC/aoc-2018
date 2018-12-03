@@ -10,8 +10,8 @@
 	$answers[2][2] = 'xretqmmonskvzupalfiwhcfdb';
 
 	// Day 3
-	$answers[1][3] = NULL;
-	$answers[2][3] = NULL;
+	$answers[1][3] = 113966;
+	$answers[2][3] = 235;
 
 	// Day 4
 	$answers[1][4] = NULL;
