@@ -22,7 +22,7 @@
 	}
 
 	$part1 = $part2 = 0;
-	$known = [];
+	$known = [0];
 	doFrequencyChanges($changes, $part1);
 	echo 'Part 1: ', $part1, "\n";
 
