@@ -13,7 +13,7 @@
 		$claim = ['x' => $x, 'y' => $y, 'w' => $w, 'h' => $h];
 		$claims[$cid] = $claim;
 
-		foreach (yieldXY($claim['x'], $claim['y'], $claim['x'] + $claim['w'] - 1, $claim['y'] + $claim['h'] - 1) as $x => $y) {
+		foreach (yieldXY($claim['x'], $claim['y'], $claim['x'] + $claim['w'], $claim['y'] + $claim['h'], false) as $x => $y) {
 			$fabric[$x][$y][$cid] = true;
 
 			if (count($fabric[$x][$y]) > 1) {

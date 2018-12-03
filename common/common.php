@@ -127,12 +127,13 @@
 	 *
 	 * @param $startx Starting X value
 	 * @param $starty Starting Y value
-	 * @param $endx Ending X value (inclusive)
-	 * @param $endy Ending Y value (inclusive)
+	 * @param $endx Ending X value
+	 * @param $endy Ending Y value
+	 * @param $inclusive (Default: true) are endx/endy inclusive?
 	 */
-	function yieldXY($startx, $starty, $endx, $endy) {
-		for ($x = $startx; $x <= $endx; $x++) {
-			for ($y = $starty; $y <= $endy; $y++) {
+	function yieldXY($startx, $starty, $endx, $endy, $inclusive = true) {
+		for ($x = $startx; $x <= ($inclusive ? $endx : $endx - 1); $x++) {
+			for ($y = $starty; $y <= ($inclusive ? $endy : $endy - 1); $y++) {
 				yield $x => $y;
 			}
 		}
