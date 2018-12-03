@@ -3,33 +3,26 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$boxes = getInputLines();
 
-	$hasThree = $hasTwo = [];
+	$hasTwo = $hasThree = 0;
 	foreach ($boxes as $box) {
-		$letters = array_count_values(str_split($box));
-
-		foreach ($letters as $v) {
-			if ($v == 2) { $hasTwo[$box] = true; }
-			if ($v == 3) { $hasThree[$box] = true; }
-		}
+		$letters = array_count_values(count_chars($box, 1));
+		$hasTwo += array_key_exists(2, $letters);
+		$hasThree += array_key_exists(3, $letters);
 	}
-	$part1 = count($hasThree) * count($hasTwo);
+	$part1 = $hasThree * $hasTwo;
 	echo 'Part 1: ', $part1, "\n";
 
-	function getSame($box1, $box2, $differenceLimit = 1) {
-		$same = '';
-		$differenceCount = 0;
+	function getSame($box1, $box2) {
+		$pos = -1;
 		for ($i = 0; $i < strlen($box1); $i++) {
-			if ($box1{$i} == $box2{$i}) {
-				$same .= $box1{$i};
-			} else {
-				$differenceCount++;
-				if ($differenceCount > $differenceLimit) { return FALSE; }
+			if ($box1{$i} != $box2{$i}) {
+				if ($pos > 0) { return FALSE; }
+				$pos = $i;
 			}
 		}
 
-		if ($differenceCount === 0) { return FALSE; }
-
-		return $same;
+		if ($pos === -1) { return FALSE; }
+		return substr($box1, 0, $pos) . substr($box1, $pos + 1);
 	}
 
 	for ($i = 0; $i < count($boxes); $i++) {
