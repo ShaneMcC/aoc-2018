@@ -16,7 +16,7 @@
 		$pos = -1;
 		for ($i = 0; $i < strlen($box1); $i++) {
 			if ($box1{$i} != $box2{$i}) {
-				if ($pos > 0) { return FALSE; }
+				if ($pos >= 0) { return FALSE; }
 				$pos = $i;
 			}
 		}
