@@ -1,4 +1,4 @@
-FROM php:7.3-cli
+FROM php:7.3-rc-cli
 
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
