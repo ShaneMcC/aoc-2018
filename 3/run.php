@@ -19,8 +19,8 @@
 			if (count($fabric[$x][$y]) > 1) {
 				if (count($fabric[$x][$y]) == 2) { $part1++; }
 
-				foreach (array_keys($fabric[$x][$y]) as $cid) {
-					unset($claims[$cid]);
+				foreach (array_keys($fabric[$x][$y]) as $cid2) {
+					unset($claims[$cid2]);
 				}
 			}
 		}
