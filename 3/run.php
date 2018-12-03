@@ -3,19 +3,16 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
-	$entries = array();
+	$fabric = [];
+	$part1 = 0;
+
 	foreach ($input as $details) {
 		preg_match('#\#([0-9]+) @ ([0-9]+),([0-9]+): ([0-9]+)x([0-9]+)#SADi', $details, $m);
 		list($all, $cid, $x, $y, $w, $h) = $m;
-		$claims[$cid] = array('x' => $x, 'y' => $y, 'w' => $w, 'h' => $h);
-	}
 
-	$max = isTest() ? 10 : 1000;
+		$claim = ['x' => $x, 'y' => $y, 'w' => $w, 'h' => $h];
+		$claims[$cid] = $claim;
 
-	$fabric = [];
-
-	$part1 = 0;
-	foreach ($claims as $cid => $claim) {
 		foreach (yieldXY($claim['x'], $claim['y'], $claim['x'] + $claim['w'] - 1, $claim['y'] + $claim['h'] - 1) as $x => $y) {
 			$fabric[$x][$y][$cid] = true;
 
