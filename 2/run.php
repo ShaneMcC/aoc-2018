@@ -26,7 +26,7 @@
 	}
 
 	for ($i = 0; $i < count($boxes); $i++) {
-		for ($j = $i; $j < count($boxes); $j++) {
+		for ($j = $i + 1; $j < count($boxes); $j++) {
 			$result = getSame($boxes[$i], $boxes[$j]);
 
 			if ($result !== FALSE) {
