@@ -8,18 +8,17 @@
 
 	foreach ($input as $details) {
 		preg_match('#\#([0-9]+) @ ([0-9]+),([0-9]+): ([0-9]+)x([0-9]+)#SADi', $details, $m);
-		list($all, $cid, $x, $y, $w, $h) = $m;
+		list($all, $cid, $cx, $cy, $cw, $ch) = $m;
 
-		$claim = ['x' => $x, 'y' => $y, 'w' => $w, 'h' => $h];
-		$claims[$cid] = $claim;
+		$claims[$cid] = $cid;
 
-		foreach (yieldXY($claim['x'], $claim['y'], $claim['x'] + $claim['w'], $claim['y'] + $claim['h'], false) as $x => $y) {
+		foreach (yieldXY($cx, $cy, $cx + $cw, $cy + $ch, false) as $x => $y) {
 			$fabric[$x][$y][$cid] = true;
 
 			if (count($fabric[$x][$y]) > 1) {
 				if (count($fabric[$x][$y]) == 2) { $part1++; }
 
-				foreach (array_keys($fabric[$x][$y]) as $cid2) {
+				foreach ($fabric[$x][$y] as $cid2 => $_) {
 					unset($claims[$cid2]);
 				}
 			}
@@ -28,6 +27,6 @@
 
 	echo 'Part 1: ', $part1, "\n";
 
-	foreach ($claims as $cid => $claim) {
+	foreach ($claims as $cid) {
 		echo 'Part 2: ', $cid, "\n";
 	}
