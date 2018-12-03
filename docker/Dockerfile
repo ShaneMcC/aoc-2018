@@ -1,7 +1,10 @@
-FROM php:7.3-rc-cli
+FROM alpine:3.8
 
 ADD entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+
+RUN apk add --no-cache php7 bash && \
+    chmod +x /entrypoint.sh && \
+    chown -R nobody:nobody /entrypoint.sh
 
 USER nobody
 

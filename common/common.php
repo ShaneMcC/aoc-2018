@@ -28,15 +28,19 @@
 	function getInputFilename() {
 		global $__CLIOPTS;
 
-		if (!posix_isatty(STDIN)) {
-			return 'php://stdin';
-		} else if (isset($__CLIOPTS['file']) && file_exists($__CLIOPTS['file'])) {
-			return $__CLIOPTS['file'];
-		}
+		if (getenv("TIMED") !== FALSE) {
+			return realpath(dirname($_SERVER['PHP_SELF'])) . '/input.txt';
+		} else {
+			if (!posix_isatty(STDIN)) {
+				return 'php://stdin';
+			} else if (isset($__CLIOPTS['file']) && file_exists($__CLIOPTS['file'])) {
+				return $__CLIOPTS['file'];
+			}
 
-		$default = realpath(dirname($_SERVER['PHP_SELF'])) . '/' . basename(isTest() ? 'test.txt' : 'input.txt');
-		if (file_exists($default)) {
-			return $default;
+			$default = realpath(dirname($_SERVER['PHP_SELF'])) . '/' . basename(isTest() ? 'test.txt' : 'input.txt');
+			if (file_exists($default)) {
+				return $default;
+			}
 		}
 
 		die('No valid input found.');
