@@ -48,13 +48,31 @@
 	}
 	asort($sleepCount);
 
+	// Sort sleeping minutes
+	foreach (array_keys($sleepMinutes) as $guard) { asort($sleepMinutes[$guard]); }
+
 	// Most Asleep Guard:
 	$mostAsleepGuard = array_keys($sleepCount);
 	$mostAsleepGuard = array_pop($mostAsleepGuard);
 
-	// Most Asleep Minute:
-	asort($sleepMinutes[$mostAsleepGuard]);
+	// Most Asleep Minute
 	$mostAsleepMinute = array_keys($sleepMinutes[$mostAsleepGuard]);
 	$mostAsleepMinute = array_pop($mostAsleepMinute);
 
 	echo 'Part 1: ', ($mostAsleepMinute * $mostAsleepGuard), "\n";
+
+	$part2Guard = $part2Minute = $part2MinuteCount = 0;
+	foreach ($sleepMinutes as $guard => $minutes) {
+		if (empty($minutes)) { continue; } // Best Guard.
+
+		$highestMinute = array_keys($minutes);
+		$highestMinute = array_pop($highestMinute);
+
+		if ($minutes[$highestMinute] > $part2MinuteCount) {
+			$part2MinuteCount = $minutes[$highestMinute];
+			$part2Minute = $highestMinute;
+			$part2Guard = $guard;
+		}
+	}
+
+	echo 'Part 2: ', ($part2Minute * $part2Guard), "\n";
