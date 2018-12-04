@@ -25,7 +25,7 @@
 				if (count($fabric[$x][$y]) == 2) { $part1++; }
 
 				// Unset any known overlaps from $claims array.
-				foreach ($fabric[$x][$y] as $cid2 => $_) {
+				foreach (array_keys($fabric[$x][$y]) as $cid2) {
 					unset($claims[$cid2]);
 				}
 			}
