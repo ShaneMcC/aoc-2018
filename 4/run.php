@@ -6,20 +6,14 @@
 	$actions = [];
 
 	foreach ($input as $details) {
-		preg_match('#\[([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+)\] (.*)#SADi', $details, $m);
+		preg_match('#\[[0-9]+-[0-9]+-[0-9]+ [0-9]+:([0-9]+)\] (.*)#SADi', $details, $m);
 
-		list($all, $year, $month, $day, $hour, $minute, $activity) = $m;
+		list($all, $minute, $activity) = $m;
 
-		$actions[] = ['year' => $year, 'month' => $month, 'day' => $day, 'hour' => $hour, 'minute' => $minute, 'activity' => $activity];
+		$actions[] = ['minute' => $minute, 'activity' => $activity];
 	}
 
-	usort($actions, function($a, $b) {
-		$aDate = mktime($a['hour'], $a['minute'], 0, $a['month'], $a['day'], $a['year']);
-		$bDate = mktime($b['hour'], $b['minute'], 0, $b['month'], $b['day'], $b['year']);
-
-		return ($aDate < $bDate) ? -1 : 1;
-	});
-
+	sort($actions);
 
 	$sleepCount = [];
 	$sleepMinutes = [];
