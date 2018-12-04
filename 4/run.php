@@ -18,6 +18,12 @@
 
 	$sleepTime = $wakeTime = $currentGuard = 0;
 
+	// Part 1.
+	$mostAsleepMinutes = $mostAsleepGuard = 0;
+
+	// Part 2.
+	$part2MinuteCount = $part2Minute = $part2Guard = 0;
+
 	// Calculate sleep times
 	foreach ($actions as $action) {
 		if (preg_match('#Guard \#([0-9]+) begins shift#', $action['activity'], $m)) {
@@ -31,40 +37,28 @@
 			$wakeTime = $action['minute'];
 
 			$sleepCount[$currentGuard] += ($wakeTime - $sleepTime);
+			if ($sleepCount[$currentGuard] > $mostAsleepMinutes) {
+				$mostAsleepGuard = $currentGuard;
+				$mostAsleepMinutes = $sleepCount[$currentGuard];
+			}
 
-			for ($i = $sleepTime; $i < $wakeTime; $i++) {
-				if (!isset($sleepMinutes[$currentGuard][$i])) { $sleepMinutes[$currentGuard][$i] = 0; }
-				$sleepMinutes[$currentGuard][$i]++;
+			for ($min = $sleepTime; $min < $wakeTime; $min++) {
+				if (!isset($sleepMinutes[$currentGuard][$min])) { $sleepMinutes[$currentGuard][$min] = 0; }
+				$sleepMinutes[$currentGuard][$min]++;
+
+				if ($sleepMinutes[$currentGuard][$min] > $part2MinuteCount) {
+					$part2MinuteCount = $sleepMinutes[$currentGuard][$min];
+					$part2Minute = $min;
+					$part2Guard = $currentGuard;
+				}
 			}
 		}
 	}
-	asort($sleepCount);
 
-	// Sort sleeping minutes
-	foreach (array_keys($sleepMinutes) as $guard) { asort($sleepMinutes[$guard]); }
-
-	// Most Asleep Guard:
-	$mostAsleepGuard = array_keys($sleepCount);
-	$mostAsleepGuard = array_pop($mostAsleepGuard);
-
-	// Most Asleep Minute
+	// Most Asleep Minute for the Most Asleep Guard.
+	asort($sleepMinutes[$mostAsleepGuard]);
 	$mostAsleepMinute = array_keys($sleepMinutes[$mostAsleepGuard]);
 	$mostAsleepMinute = array_pop($mostAsleepMinute);
 
 	echo 'Part 1: ', ($mostAsleepMinute * $mostAsleepGuard), "\n";
-
-	$part2Guard = $part2Minute = $part2MinuteCount = 0;
-	foreach ($sleepMinutes as $guard => $minutes) {
-		if (empty($minutes)) { continue; } // Best Guard.
-
-		$highestMinute = array_keys($minutes);
-		$highestMinute = array_pop($highestMinute);
-
-		if ($minutes[$highestMinute] > $part2MinuteCount) {
-			$part2MinuteCount = $minutes[$highestMinute];
-			$part2Minute = $highestMinute;
-			$part2Guard = $guard;
-		}
-	}
-
 	echo 'Part 2: ', ($part2Minute * $part2Guard), "\n";
