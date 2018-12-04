@@ -3,8 +3,8 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
+	sort($input);
 	$actions = [];
-
 	foreach ($input as $details) {
 		preg_match('#\[[0-9]+-[0-9]+-[0-9]+ [0-9]+:([0-9]+)\] (.*)#SADi', $details, $m);
 
@@ -12,8 +12,6 @@
 
 		$actions[] = ['minute' => $minute, 'activity' => $activity];
 	}
-
-	sort($actions);
 
 	$sleepCount = [];
 	$sleepMinutes = [];
