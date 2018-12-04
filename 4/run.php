@@ -22,7 +22,7 @@
 	$mostAsleepMinutes = $mostAsleepGuard = 0;
 
 	// Part 2.
-	$part2MinuteCount = $part2Minute = $part2Guard = 0;
+	$mostAsleepPerMinute = $mostSleptMinute = $mostSleptMinuteGuard = 0;
 
 	// Calculate sleep times
 	foreach ($actions as $action) {
@@ -33,32 +33,36 @@
 
 		} else if ($action['activity'] == 'falls asleep') {
 			$sleepTime = $action['minute'];
+
 		} else if ($action['activity'] == 'wakes up') {
 			$wakeTime = $action['minute'];
 
 			$sleepCount[$currentGuard] += ($wakeTime - $sleepTime);
+
+			// If this guard has slept more total than our previous most-slept
+			// guard, keep a note of this.
 			if ($sleepCount[$currentGuard] > $mostAsleepMinutes) {
 				$mostAsleepGuard = $currentGuard;
 				$mostAsleepMinutes = $sleepCount[$currentGuard];
 			}
 
+			// Calculate how much time they spent asleep each minute.
 			for ($min = $sleepTime; $min < $wakeTime; $min++) {
 				if (!isset($sleepMinutes[$currentGuard][$min])) { $sleepMinutes[$currentGuard][$min] = 0; }
 				$sleepMinutes[$currentGuard][$min]++;
 
-				if ($sleepMinutes[$currentGuard][$min] > $part2MinuteCount) {
-					$part2MinuteCount = $sleepMinutes[$currentGuard][$min];
-					$part2Minute = $min;
-					$part2Guard = $currentGuard;
+				// If this is the most-slept minute, then keep a note of this.
+				if ($sleepMinutes[$currentGuard][$min] > $mostAsleepPerMinute) {
+					$mostAsleepPerMinute = $sleepMinutes[$currentGuard][$min];
+					$mostSleptMinute = $min;
+					$mostSleptMinuteGuard = $currentGuard;
 				}
 			}
 		}
 	}
 
 	// Most Asleep Minute for the Most Asleep Guard.
-	asort($sleepMinutes[$mostAsleepGuard]);
-	$mostAsleepMinute = array_keys($sleepMinutes[$mostAsleepGuard]);
-	$mostAsleepMinute = array_pop($mostAsleepMinute);
+	$mostAsleepMinute = array_keys($sleepMinutes[$mostAsleepGuard], max($sleepMinutes[$mostAsleepGuard]))[0];
 
 	echo 'Part 1: ', ($mostAsleepMinute * $mostAsleepGuard), "\n";
-	echo 'Part 2: ', ($part2Minute * $part2Guard), "\n";
+	echo 'Part 2: ', ($mostSleptMinute * $mostSleptMinuteGuard), "\n";
