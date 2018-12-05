@@ -5,19 +5,18 @@
 
 	// Build all the removal pairs required in this input.
 	$removals = [];
-	$units = array_keys(count_chars(strtolower($input), 1));
-	foreach ($units as $unit) {
+	for ($unit = 65; $unit < 91; $$unit++) {
 		$removals[] = chr($unit) . chr($unit ^ 32);
 		$removals[] = chr($unit ^ 32) . chr($unit);
 	}
 
 	function react($input) {
 		global $removals;
-	    do {
-	        $input = str_replace($removals, '', $input, $count);
-	    } while ($count > 0);
+		do {
+			$input = str_replace($removals, '', $input, $count);
+		} while ($count > 0);
 
-	    return $input;
+		return $input;
 	}
 
 	$part1 = react($input);
@@ -26,10 +25,12 @@
 	// Start smaller.
 	$input = $part1;
 	$shortest = strlen($input);
-	foreach ($units as $unit) {
-		$newInput = str_replace([chr($unit), chr($unit ^ 32)], '', $input);
-		$result = react($newInput);
-		if (strlen($result) < $shortest) { $shortest = strlen($result); }
+	for ($unit = 65; $unit < 91; $$unit++) {
+		$newInput = str_replace([chr($unit), chr($unit ^ 32)], '', $input, $count);
+		if ($count > 0) {
+			$result = react($newInput);
+			if (strlen($result) < $shortest) { $shortest = strlen($result); }
+		}
 	}
 
 	echo 'Part 2: ', $shortest, "\n";
