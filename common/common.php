@@ -27,6 +27,9 @@
 		return '';
 	}
 
+	/**
+	 * Get the answers to both parts of the day.
+	 */
 	function getAnswers() {
 		return [1 => getAnswer(1), 2 => getAnswer(2)];
 	}
