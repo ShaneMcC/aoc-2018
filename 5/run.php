@@ -3,14 +3,16 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLine();
 
-	function react($input) {
-		// Possible removal units.
-		$removals = [];
-		foreach (array_keys(count_chars(strtolower($input), 1)) as $unit) {
-			$removals[] = chr($unit) . chr($unit - 32);
-			$removals[] = chr($unit - 32) . chr($unit);
-		}
+	// Build all the removal pairs required in this input.
+	$removals = [];
+	$units = array_keys(count_chars(strtolower($input), 1));
+	foreach ($units as $unit) {
+		$removals[] = chr($unit) . chr($unit ^ 32);
+		$removals[] = chr($unit ^ 32) . chr($unit);
+	}
 
+	function react($input) {
+		global $removals;
 	    do {
 	        $input = str_replace($removals, '', $input, $count);
 	    } while ($count > 0);
@@ -23,11 +25,11 @@
 
 	// Start smaller.
 	$input = $part1;
-	$shortest = -1;
-	foreach (array_keys(count_chars(strtolower($input), 1)) as $unit) {
-		$newInput = preg_replace('#' . chr($unit) . '#i', '', $input);
+	$shortest = strlen($input);
+	foreach ($units as $unit) {
+		$newInput = str_replace([chr($unit), chr($unit ^ 32)], '', $input);
 		$result = react($newInput);
-		if (strlen($result) < $shortest || $shortest == -1) { $shortest = strlen($result); }
+		if (strlen($result) < $shortest) { $shortest = strlen($result); }
 	}
 
 	echo 'Part 2: ', $shortest, "\n";
