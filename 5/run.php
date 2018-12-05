@@ -5,7 +5,7 @@
 
 	// Build all the removal pairs required in this input.
 	$removals = [];
-	for ($unit = 65; $unit < 91; $$unit++) {
+	for ($unit = 65; $unit < 91; $unit++) {
 		$removals[] = chr($unit) . chr($unit ^ 32);
 		$removals[] = chr($unit ^ 32) . chr($unit);
 	}
