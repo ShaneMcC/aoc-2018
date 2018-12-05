@@ -2,9 +2,6 @@
 	/* Some of these are not memory efficient, so don't bother caring. */
 	ini_set('memory_limit', '-1');
 
-	/* Known Answers so far for comparing output after any changes. */
-	require_once(dirname(__FILE__) . '/answers.php');
-
 	/*
 	 * To make code easier to read, sometimes we move "fluff" code to a separate
 	 * file, include it if it exists.
@@ -14,6 +11,24 @@
 	 */
 	if (file_exists(realpath(dirname($_SERVER['PHP_SELF'])) . '/fluff.php')) {
 		require_once(realpath(dirname($_SERVER['PHP_SELF'])) . '/fluff.php');
+	}
+
+	/**
+	 * Get the answer for this day if known.
+	 */
+	function getAnswer($part) {
+		$file = realpath(dirname($_SERVER['PHP_SELF'])) . '/answers.txt';
+
+		$answers = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		if (isset($answers[$part - 1])) {
+			return $answers[$part - 1];
+		}
+
+		return '';
+	}
+
+	function getAnswers() {
+		return [1 => getAnswer(1), 2 => getAnswer(2)];
 	}
 
 	/**
