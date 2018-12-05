@@ -11,13 +11,14 @@
 
 			for ($i = 0; $i < count($ll)-1; $i++) {
 				if ($ll[$i] != $ll[$i + 1] && strtolower($ll[$i]) == strtolower($ll[$i + 1])) {
-					$ll[$i] = '';
-					$ll[$i + 1] = '';
+					unset($ll[$i]);
+					unset($ll[$i + 1]);
+					$i++;
 					$madeChange = true;
 				}
 			}
 
-			$ll = str_split(implode('', $ll));
+			$ll = array_values($ll);
 		} while ($madeChange);
 
 		return $ll;
