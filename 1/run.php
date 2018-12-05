@@ -1,14 +1,7 @@
 #!/usr/bin/php
 <?php
 	require_once(dirname(__FILE__) . '/../common/common.php');
-	$input = getInputLines();
-
-	$changes = array();
-	foreach ($input as $details) {
-		preg_match('#([+-][0-9]+)#SADi', $details, $m);
-		list($all, $change) = $m;
-		$changes[] = $change;
-	}
+	$changes = getInputLines();
 
 	function doFrequencyChanges($changes, &$freq = 0, &$knownValues = []) {
 		foreach ($changes as $c) {
