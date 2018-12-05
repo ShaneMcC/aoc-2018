@@ -17,7 +17,7 @@
 	$mostAsleepPerMinute = $mostSleptMinute = $mostSleptMinuteGuard = 0;
 
 	foreach ($input as $details) {
-		preg_match('#\[[0-9]+-[0-9]+-[0-9]+ [0-9]+:([0-9]+)\] (?:Guard \#([0-9]+) )?(begins shift|falls asleep|wakes up)#SADi', $details, $m);
+		preg_match('#^\[[0-9]+-[0-9]+-[0-9]+ [0-9]+:([0-9]+)\] (?:Guard \#([0-9]+) )?(begins shift|falls asleep|wakes up)$#', $details, $m);
 
 		list($all, $minute, $guard, $activity) = $m;
 
