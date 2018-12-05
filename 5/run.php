@@ -25,7 +25,7 @@
 	// Start smaller.
 	$input = $part1;
 	$shortest = strlen($input);
-	for ($unit = 65; $unit < 91; $$unit++) {
+	for ($unit = 65; $unit < 91; $unit++) {
 		$newInput = str_replace([chr($unit), chr($unit ^ 32)], '', $input, $count);
 		if ($count > 0) {
 			$result = react($newInput);
