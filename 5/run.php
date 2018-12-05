@@ -4,36 +4,30 @@
 	$input = getInputLine();
 
 	function react($input) {
-		$ll = str_split($input);
-		$madeChange = false;
-		do {
-			$madeChange = false;
+		// Possible removal units.
+		$removals = [];
+		foreach (array_keys(count_chars(strtolower($input), 1)) as $unit) {
+			$removals[] = chr($unit) . chr($unit - 32);
+			$removals[] = chr($unit - 32) . chr($unit);
+		}
 
-			for ($i = 0; $i < count($ll)-1; $i++) {
-				if ($ll[$i] != $ll[$i + 1] && strtolower($ll[$i]) == strtolower($ll[$i + 1])) {
-					unset($ll[$i]);
-					unset($ll[$i + 1]);
-					$i++;
-					$madeChange = true;
-				}
-			}
+	    do {
+	        $input = str_replace($removals, '', $input, $count);
+	    } while ($count > 0);
 
-			$ll = array_values($ll);
-		} while ($madeChange);
-
-		return $ll;
+	    return $input;
 	}
 
 	$part1 = react($input);
-	echo 'Part 1: ', count($part1), "\n";
+	echo 'Part 1: ', strlen($part1), "\n";
 
 	// Start smaller.
-	$input = implode('', $part1);
+	$input = $part1;
 	$shortest = -1;
 	foreach (array_keys(count_chars(strtolower($input), 1)) as $unit) {
 		$newInput = preg_replace('#' . chr($unit) . '#i', '', $input);
 		$result = react($newInput);
-		if (count($result) < $shortest || $shortest == -1) { $shortest = count($result); }
+		if (strlen($result) < $shortest || $shortest == -1) { $shortest = strlen($result); }
 	}
 
 	echo 'Part 2: ', $shortest, "\n";
