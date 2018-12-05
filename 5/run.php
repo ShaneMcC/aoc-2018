@@ -27,6 +27,8 @@
 	$part1 = react($input);
 	echo 'Part 1: ', count($part1), "\n";
 
+	// Start smaller.
+	$input = implode('', $part1);
 	$shortest = -1;
 	foreach (array_keys(count_chars(strtolower($input), 1)) as $unit) {
 		$newInput = str_replace(chr($unit - 32), '', $input);
