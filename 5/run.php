@@ -31,8 +31,7 @@
 	$input = implode('', $part1);
 	$shortest = -1;
 	foreach (array_keys(count_chars(strtolower($input), 1)) as $unit) {
-		$newInput = str_replace(chr($unit - 32), '', $input);
-		$newInput = str_replace(chr($unit), '', $newInput);
+		$newInput = preg_replace('#' . chr($unit) . '#i', '', $input);
 
 		echo chr($unit), ' => ';
 		$result = react($newInput);
