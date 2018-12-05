@@ -32,11 +32,7 @@
 	$shortest = -1;
 	foreach (array_keys(count_chars(strtolower($input), 1)) as $unit) {
 		$newInput = preg_replace('#' . chr($unit) . '#i', '', $input);
-
-		echo chr($unit), ' => ';
 		$result = react($newInput);
-		echo count($result), "\n";
-
 		if (count($result) < $shortest || $shortest == -1) { $shortest = count($result); }
 	}
 
