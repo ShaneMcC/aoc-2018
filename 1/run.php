@@ -8,20 +8,24 @@
 			$freq += $c;
 
 			if (array_key_exists($freq, $knownValues)) { return true; }
-			$knownValues[$freq] = true;
+			$knownValues[$freq] = $freq;
 		}
 
 		return false;
 	}
 
-	$part1 = $part2 = 0;
-	$known = [0];
-	doFrequencyChanges($changes, $part1);
-	echo 'Part 1: ', $part1, "\n";
+	$freq = 0;
+	$known = [0 => 0];
+	doFrequencyChanges($changes, $freq, $known);
+	echo 'Part 1: ', $freq, "\n";
 
-	while (true) {
-		if (doFrequencyChanges($changes, $part2, $known)) {
-			break;
+	array_pop($known);
+	for ($i = 1; true; $i++) {
+		foreach ($known as $k) {
+			$f = $k + ($freq * $i);
+			if (array_key_exists($f, $known)) {
+				echo 'Part 2: (', $i, ') ', $f, "\n";
+				break 2;
+			}
 		}
 	}
-	echo 'Part 2: ', $part2, "\n";
