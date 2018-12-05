@@ -4,19 +4,11 @@
 	$input = getInputLines();
 
 	sort($input);
-	$actions = [];
-	foreach ($input as $details) {
-		preg_match('#\[[0-9]+-[0-9]+-[0-9]+ [0-9]+:([0-9]+)\] (.*)#SADi', $details, $m);
-
-		list($all, $minute, $activity) = $m;
-
-		$actions[] = ['minute' => $minute, 'activity' => $activity];
-	}
 
 	$sleepCount = [];
 	$sleepMinutes = [];
 
-	$sleepTime = $wakeTime = $currentGuard = 0;
+	$sleepTime = $currentGuard = 0;
 
 	// Part 1.
 	$mostAsleepMinutes = $mostAsleepGuard = 0;
@@ -24,20 +16,21 @@
 	// Part 2.
 	$mostAsleepPerMinute = $mostSleptMinute = $mostSleptMinuteGuard = 0;
 
-	// Calculate sleep times
-	foreach ($actions as $action) {
-		if (preg_match('#Guard \#([0-9]+) begins shift#', $action['activity'], $m)) {
+	foreach ($input as $details) {
+		preg_match('#\[[0-9]+-[0-9]+-[0-9]+ [0-9]+:([0-9]+)\] (.*)#SADi', $details, $m);
+
+		list($all, $minute, $activity) = $m;
+
+		if (preg_match('#Guard \#([0-9]+) begins shift#', $activity, $m)) {
 			$currentGuard = $m[1];
 			if (!isset($sleepMinutes[$currentGuard])) { $sleepMinutes[$currentGuard] = []; }
 			if (!isset($sleepCount[$currentGuard])) { $sleepCount[$currentGuard] = 0; }
 
-		} else if ($action['activity'] == 'falls asleep') {
-			$sleepTime = $action['minute'];
+		} else if ($activity == 'falls asleep') {
+			$sleepTime = $minute;
 
-		} else if ($action['activity'] == 'wakes up') {
-			$wakeTime = $action['minute'];
-
-			$sleepCount[$currentGuard] += ($wakeTime - $sleepTime);
+		} else if ($activity == 'wakes up') {
+			$sleepCount[$currentGuard] += ($minute - $sleepTime);
 
 			// If this guard has slept more total than our previous most-slept
 			// guard, keep a note of this.
@@ -47,7 +40,7 @@
 			}
 
 			// Calculate how much time they spent asleep each minute.
-			for ($min = $sleepTime; $min < $wakeTime; $min++) {
+			for ($min = $sleepTime; $min < $minute; $min++) {
 				if (!isset($sleepMinutes[$currentGuard][$min])) { $sleepMinutes[$currentGuard][$min] = 0; }
 				$sleepMinutes[$currentGuard][$min]++;
 
