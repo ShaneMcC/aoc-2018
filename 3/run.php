@@ -10,33 +10,28 @@
 		preg_match('#\#([0-9]+) @ ([0-9]+),([0-9]+): ([0-9]+)x([0-9]+)#SADi', $details, $m);
 		list($all, $cid, $cx, $cy, $cw, $ch) = $m;
 
-		$claims[$cid] = $cid;
+		$claims[$cid] = false;
 
 		// Map out each use of fabric
 		foreach (yieldXY($cx, $cy, $cx + $cw, $cy + $ch, false) as $x => $y) {
-			// We use the $cid as a key for efficiency.
-			$fabric[$x][$y][$cid] = true;
-
-			// If there is more than one sub-item in the array then this is an
-			// overlap.
-			if (count($fabric[$x][$y]) > 1) {
-				// If it is exactly 2, then this is the first time we have seen
-				// this particular segment overlap, so count it for part 1.
-				if (count($fabric[$x][$y]) == 2) { $part1++; }
-
-				// Unset any known overlaps from $claims array.
-				foreach (array_keys($fabric[$x][$y]) as $cid2) {
-					unset($claims[$cid2]);
+			if (!isset($fabric[$x][$y])) {
+				$fabric[$x][$y] = $cid;
+			} else {
+				if (!is_array($fabric[$x][$y])) {
+					unset($claims[$fabric[$x][$y]]);
+					$fabric[$x][$y] = [$fabric[$x][$y] => true];
+					$part1++;
 				}
+
+				$fabric[$x][$y][$cid] = true;
+				unset($claims[$cid]);
 			}
 		}
 	}
 
+
 	// Count of overlaps.
 	echo 'Part 1: ', $part1, "\n";
 
-	// Output the first (should be only) claim that was never part of an overlap
-	foreach ($claims as $cid) {
-		echo 'Part 2: ', $cid, "\n";
-		break;
-	}
+	$part2 = array_reduce(array_keys($claims), function($carry, $key) use ($claims) { return $claims[$key] ? $carry : $key; });
+	echo 'Part 2: ', $part2, "\n";
