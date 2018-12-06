@@ -48,9 +48,10 @@
 	$safeSize = 0;
 	$areaSize = [];
 	$grid = [];
+
 	foreach (yieldXY($minX, $minY, $maxX, $maxY) as $x => $y) {
 		$edge = in_array($x, [$minX, $maxX]) || in_array($y, [$minY, $maxY]);
-		[$closest, $total] = getGridData($x, $y);
+		list($closest, $total) = getGridData($x, $y);
 		$id = count($closest) == 1 ? $closest[0] : '';
 
 		$grid[$y][$x] = $id;
