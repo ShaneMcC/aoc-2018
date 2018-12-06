@@ -23,13 +23,16 @@
 		return abs($x1 - $x2) + abs($y1 - $y2);
 	}
 
-	function getClosest($x, $y) {
+	function getGridData($x, $y) {
 		global $coords;
+
+		$total = 0;
 
 		$closestDistance = PHP_INT_MAX;
 		$closest = [];
 		foreach ($coords as $id => $c) {
 			$distance = manhattan($x, $y, $c['x'], $c['y']);
+			$total += $distance;
 
 			if ($distance < $closestDistance) {
 				$closest = [$id];
@@ -39,13 +42,14 @@
 			}
 		}
 
-		return $closest;
+		return [$closest, $total];
 	}
 
+	$safeSize = 0;
 	$areaSize = [];
 	$grid = [];
 	foreach (yieldXY($minX, $minY, $maxX, $maxY) as $x => $y) {
-		$closest = getClosest($x, $y);
+		[$closest, $total] = getGridData($x, $y);
 		$id = count($closest) == 1 ? $closest[0] : '.';
 
 		$grid[$y][$x] = $id;
@@ -53,6 +57,8 @@
 			if (!isset($areaSize[$id])) { $areaSize[$id] = 0; }
 			$areaSize[$id]++;
 		}
+
+		if ($total < (isTest() ? 32 : 10000)) { $safeSize++; }
 	}
 
 	// Remove the infinite ones (any that touch an edge)
@@ -88,3 +94,4 @@
 	}
 
 	echo 'Part 1: ', max($areaSize), "\n";
+	echo 'Part 2: ', $safeSize, "\n";
