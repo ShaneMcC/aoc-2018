@@ -6,6 +6,7 @@
 
 	$maxX = $maxY = 0;
 	$minX = $minY = PHP_INT_MAX;
+	$safeAreaSize = (isTest() ? 32 : 10000);
 
 	$coords = [];
 	foreach ($input as $details) {
@@ -45,27 +46,53 @@
 		return [$closest, $total];
 	}
 
-	$safeSize = 0;
-	$areaSize = [];
-	$grid = [];
+	function getAreas($extra = 0) {
+		global $minX, $minY, $maxX, $maxY, $safeAreaSize, $coords;
 
-	foreach (yieldXY($minX, $minY, $maxX, $maxY) as $x => $y) {
-		$edge = in_array($x, [$minX, $maxX]) || in_array($y, [$minY, $maxY]);
-		list($closest, $total) = getGridData($x, $y);
-		$id = count($closest) == 1 ? $closest[0] : '';
+		$safeSize = 0;
+		$areaSize = [];
+		$grid = [];
 
-		$grid[$y][$x] = $id;
-		if ($id !== '') {
-			if ($edge) {
-				$areaSize[$id] = -1;
-			} else {
-				if (!isset($areaSize[$id])) { $areaSize[$id] = 0; }
-				if ($areaSize[$id] >= 0) { $areaSize[$id]++; }
+		$myMinX = $minX - $extra;
+		$myMinY = $minY - $extra;
+		$myMaxX = $maxX + $extra;
+		$myMaxY = $maxY + $extra;
+
+		foreach (yieldXY($myMinX, $myMinY, $myMaxX, $myMaxY) as $x => $y) {
+			$edge = in_array($x, [$myMinX, $myMaxX]) || in_array($y, [$myMinY, $myMaxY]);
+			list($closest, $total) = getGridData($x, $y);
+			$id = count($closest) == 1 ? $closest[0] : '';
+
+			// Is this safe?
+			if ($total < $safeAreaSize) {
+				$safeSize++;
+
+				// If the safe area touches the boundary, we need to expand our
+				// search grid. Fuck you MD87...
+				if ($edge) {
+					return getAreas(ceil($safeAreaSize / count($coords)) + 1);
+				}
+			}
+
+			// We only care about the area sizes for areas within the normal
+			// boundary.
+			if ($x > $minX && $x < $maxX && $y > $minY && $y < $maxY) {
+				$grid[$y][$x] = $id;
+				if ($id !== '') {
+					if ($edge) {
+						$areaSize[$id] = -1;
+					} else {
+						if (!isset($areaSize[$id])) { $areaSize[$id] = 0; }
+						if ($areaSize[$id] >= 0) { $areaSize[$id]++; }
+					}
+				}
 			}
 		}
 
-		if ($total < (isTest() ? 32 : 10000)) { $safeSize++; }
+		return [$areaSize, $grid, $safeSize];
 	}
+
+	list($areaSize, $grid, $safeSize) = getAreas();
 
 	if (isDebug()) {
 		draw();
