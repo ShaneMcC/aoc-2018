@@ -66,23 +66,10 @@
 		if ($total < (isTest() ? 32 : 10000)) { $safeSize++; }
 	}
 
-	function draw() {
-		global $grid;
-
-		foreach ($grid as $row) {
-			$first = true;
-			foreach ($row as $item) {
-				if (!$first) { echo ''; } else { $first = false; }
-				echo sprintf('%s', is_int($item) ? chr(33 + $item) : ' ');
-			}
-			echo "\n";
-		}
-	}
-
 	if (isDebug()) {
 		draw();
 		asort($areaSize);
-		var_dump($areaSize);
+		print_r($areaSize);
 	}
 
 	echo 'Part 1: ', max($areaSize), "\n";
