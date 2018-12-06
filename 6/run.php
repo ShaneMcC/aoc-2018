@@ -49,30 +49,22 @@
 	$areaSize = [];
 	$grid = [];
 	foreach (yieldXY($minX, $minY, $maxX, $maxY) as $x => $y) {
+		$edge = in_array($x, [$minX, $maxX]) || in_array($y, [$minY, $maxY]);
 		[$closest, $total] = getGridData($x, $y);
-		$id = count($closest) == 1 ? $closest[0] : '.';
+		$id = count($closest) == 1 ? $closest[0] : '';
 
 		$grid[$y][$x] = $id;
-		if ($id != '.') {
-			if (!isset($areaSize[$id])) { $areaSize[$id] = 0; }
-			$areaSize[$id]++;
+		if ($id !== '') {
+			if ($edge) {
+				$areaSize[$id] = -1;
+			} else {
+				if (!isset($areaSize[$id])) { $areaSize[$id] = 0; }
+				if ($areaSize[$id] >= 0) { $areaSize[$id]++; }
+			}
 		}
 
 		if ($total < (isTest() ? 32 : 10000)) { $safeSize++; }
 	}
-
-	// Remove the infinite ones (any that touch an edge)
-	foreach (yieldXY($minX, $minY, $maxX, $maxY) as $x => $y) {
-		if (!in_array($x, [$minX, $maxX]) && !in_array($y, [$minY, $maxY])) { continue; }
-
-		$id = $grid[$y][$x];
-
-		if (isset($areaSize[$id])) {
-			if (isDebug()) { echo 'Removing: ', $id, "\n"; }
-			unset($areaSize[$id]);
-		}
-	}
-
 
 	function draw() {
 		global $grid;
@@ -80,8 +72,8 @@
 		foreach ($grid as $row) {
 			$first = true;
 			foreach ($row as $item) {
-				if (!$first) { echo ','; } else { $first = false; }
-				echo sprintf('%3s', $item);
+				if (!$first) { echo ''; } else { $first = false; }
+				echo sprintf('%s', is_int($item) ? chr(33 + $item) : ' ');
 			}
 			echo "\n";
 		}
