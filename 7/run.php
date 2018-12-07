@@ -26,7 +26,7 @@
 
 		$time = -1;
 		$busy = 0;
-		while ($busy != 0 || !empty($pendingSteps) || !empty($availableSteps)) {
+		while (count($order) != count($steps)) {
 			$time++;
 
 			// Step all workers.
@@ -43,6 +43,7 @@
 				}
 			}
 
+			// Find any pending steps.
 			if ($busy != $workerCount) {
 				foreach ($pendingSteps as $id => $step) {
 					foreach ($step['requires'] as $b) {
@@ -60,7 +61,7 @@
 			// Allocate to free workers
 			if (!empty($availableSteps)) {
 				foreach ($workers as $id => &$w) {
-					if (empty($w['step'])) {
+					if (empty($w['step']) && !empty($availableSteps)) {
 						$s = array_shift($availableSteps);
 						$w['step'] = $s;
 						$w['remaining'] = $perStep + ($multiplier * (ord($s) - 64));
