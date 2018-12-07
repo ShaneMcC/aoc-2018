@@ -14,7 +14,7 @@
 		$steps[$b]['requires'][] = $a;
 	}
 
-	function getSteps($workerCount = 5, $perStep = 60, $timedSteps = true) {
+	function getSteps($workerCount, $perStep, $multiplier) {
 		global $steps;
 
 		$order = [];
@@ -35,7 +35,7 @@
 				if (empty($w['step'])) { continue; }
 
 				$w['remaining']--;
-				if ($w['remaining'] == 0) {
+				if ($w['remaining'] <= 0) {
 					$order[] = $w['step'];
 					$w['step'] = '';
 				} else {
@@ -63,7 +63,7 @@
 					if (empty($w['step'])) {
 						$s = array_shift($availableSteps);
 						$w['step'] = $s;
-						$w['remaining'] = $perStep + (ord($s) - 64);
+						$w['remaining'] = $perStep + ($multiplier * (ord($s) - 64));
 						$busy++;
 					}
 				}
@@ -82,8 +82,8 @@
 		return [$order, $time];
 	}
 
-	$part1 = getSteps(1, 0, true);
+	$part1 = getSteps(1, 0, 0);
 	echo 'Part 1: ', implode('', $part1[0]), "\n";
 
-	$part2 = getSteps();
-	echo 'Part 2: ', implode('', $part2[0]), ' => ', $part2[1], "\n";
+	$part2 = getSteps(5, 60, 1);
+	echo 'Part 2: ', $part2[1], "\n";
