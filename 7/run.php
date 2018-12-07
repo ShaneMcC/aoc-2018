@@ -14,7 +14,6 @@
 		$steps[$b]['requires'][] = $a;
 	}
 
-
 	function getSteps($workerCount = 5, $perStep = 60, $timedSteps = true) {
 		global $steps;
 
@@ -44,17 +43,19 @@
 				}
 			}
 
-			foreach ($pendingSteps as $id => $step) {
-				foreach ($step['requires'] as $b) {
-					if (!in_array($b, $order)) {
-						continue 2;
+			if ($busy != $workerCount) {
+				foreach ($pendingSteps as $id => $step) {
+					foreach ($step['requires'] as $b) {
+						if (!in_array($b, $order)) {
+							continue 2;
+						}
 					}
-				}
 
-				$availableSteps[] = $id;
-				unset($pendingSteps[$id]);
+					$availableSteps[] = $id;
+					unset($pendingSteps[$id]);
+				}
+				sort($availableSteps);
 			}
-			sort($availableSteps);
 
 			// Allocate to free workers
 			if (!empty($availableSteps)) {
