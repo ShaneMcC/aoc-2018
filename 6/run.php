@@ -76,7 +76,7 @@
 
 			// We only care about the area sizes for areas within the normal
 			// boundary.
-			if ($x > $minX && $x < $maxX && $y > $minY && $y < $maxY) {
+			if ($x >= $minX && $x <= $maxX && $y >= $minY && $y <= $maxY) {
 				$grid[$y][$x] = $id;
 				if ($id !== '') {
 					if ($edge) {
