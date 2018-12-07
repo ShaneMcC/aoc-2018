@@ -24,6 +24,13 @@
 		$workers = [];
 		for ($i = 0; $i < $workerCount; $i++) { $workers[$i] = ['step' => '', 'remaining' => 0]; }
 
+		if (isDebug()) {
+			echo 'Second ';
+			foreach ($workers as $id => $w) { echo sprintf('  Worker %-2s', $id + 1); }
+			echo '  Done';
+			echo "\n";
+		}
+
 		$time = -1;
 		$busy = 0;
 		while (count($order) != count($steps)) {
@@ -71,11 +78,11 @@
 			}
 
 			if (isDebug()) {
-				echo sprintf('%4s ', $time);
+				echo sprintf('%4s   ', $time);
 				foreach ($workers as $id => $w) {
-					echo sprintf('%5s', (!empty($w['step']) ? $w['step'] : '.'));
+					echo sprintf('     %-2s    ', (!empty($w['step']) ? $w['step'] : '.'));
 				}
-				echo '     ', implode('', $order);
+				echo '  ', implode('', $order);
 				echo "\n";
 			}
 		}
@@ -86,5 +93,5 @@
 	$part1 = getSteps(1, 0, 0);
 	echo 'Part 1: ', implode('', $part1[0]), "\n";
 
-	$part2 = getSteps(5, 60, 1);
+	$part2 = isTest() ? getSteps(2, 0, 1) : getSteps(5, 60, 1);
 	echo 'Part 2: ', $part2[1], "\n";
