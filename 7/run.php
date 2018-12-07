@@ -31,13 +31,13 @@
 
 			// Step all workers.
 			$busy = 0;
-			foreach ($workers as $id => &$w) {
+			foreach ($workers as $id => $w) {
 				if (empty($w['step'])) { continue; }
 
-				$w['remaining']--;
-				if ($w['remaining'] <= 0) {
+				$workers[$id]['remaining']--;
+				if ($workers[$id]['remaining'] <= 0) {
 					$order[] = $w['step'];
-					$w['step'] = '';
+					$workers[$id]['step'] = '';
 				} else {
 					$busy++;
 				}
@@ -60,22 +60,22 @@
 
 			// Allocate to free workers
 			if (!empty($availableSteps)) {
-				foreach ($workers as $id => &$w) {
+				foreach ($workers as $id => $w) {
 					if (empty($w['step']) && !empty($availableSteps)) {
 						$s = array_shift($availableSteps);
-						$w['step'] = $s;
-						$w['remaining'] = $perStep + ($multiplier * (ord($s) - 64));
+						$workers[$id]['step'] = $s;
+						$workers[$id]['remaining'] = $perStep + ($multiplier * (ord($s) - 64));
 						$busy++;
 					}
 				}
 			}
 
 			if (isDebug()) {
-				echo $time, '    ';
-				foreach ($workers as $z) {
-					echo (!empty($z['step']) ? $z['step'] : '.'), '    ';
+				echo sprintf('%4s ', $time);
+				foreach ($workers as $id => $w) {
+					echo sprintf('%5s', (!empty($w['step']) ? $w['step'] : '.'));
 				}
-				echo implode('', $order);
+				echo '     ', implode('', $order);
 				echo "\n";
 			}
 		}
