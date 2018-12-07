@@ -14,14 +14,36 @@
 		$steps[$b]['requires'][] = $a;
 	}
 
-	function getSteps() {
+
+	function getSteps($workerCount = 5, $perStep = 60, $timedSteps = true) {
 		global $steps;
 
 		$order = [];
 		$pendingSteps = $steps;
+		$availableSteps = [];
 
-		while (!empty($pendingSteps)) {
-			$availableSteps = [];
+		$workers = [];
+		for ($i = 0; $i < $workerCount; $i++) { $workers[$i] = ['step' => '', 'remaining' => 0]; }
+
+		$time = -1;
+		$busy = 0;
+		while ($busy != 0 || !empty($pendingSteps) || !empty($availableSteps)) {
+			$time++;
+
+			// Step all workers.
+			$busy = 0;
+			foreach ($workers as $id => &$w) {
+				if (empty($w['step'])) { continue; }
+
+				$w['remaining']--;
+				if ($w['remaining'] == 0) {
+					$order[] = $w['step'];
+					$w['step'] = '';
+				} else {
+					$busy++;
+				}
+			}
+
 			foreach ($pendingSteps as $id => $step) {
 				foreach ($step['requires'] as $b) {
 					if (!in_array($b, $order)) {
@@ -30,15 +52,37 @@
 				}
 
 				$availableSteps[] = $id;
+				unset($pendingSteps[$id]);
 			}
 			sort($availableSteps);
 
-			$order[] = $availableSteps[0];
-			unset($pendingSteps[$availableSteps[0]]);
+			// Allocate to free workers
+			if (!empty($availableSteps)) {
+				foreach ($workers as $id => &$w) {
+					if (empty($w['step'])) {
+						$s = array_shift($availableSteps);
+						$w['step'] = $s;
+						$w['remaining'] = $perStep + (ord($s) - 64);
+						$busy++;
+					}
+				}
+			}
+
+			if (isDebug()) {
+				echo $time, '    ';
+				foreach ($workers as $z) {
+					echo (!empty($z['step']) ? $z['step'] : '.'), '    ';
+				}
+				echo implode('', $order);
+				echo "\n";
+			}
 		}
 
-		return $order;
+		return [$order, $time];
 	}
 
-	$steps = getSteps();
-	echo 'Part 1: ', implode('', $steps), "\n";
+	$part1 = getSteps(1, 0, true);
+	echo 'Part 1: ', implode('', $part1[0]), "\n";
+
+	$part2 = getSteps();
+	echo 'Part 2: ', implode('', $part2[0]), ' => ', $part2[1], "\n";
