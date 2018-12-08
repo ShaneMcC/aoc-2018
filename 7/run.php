@@ -70,9 +70,6 @@
 					unset($pendingSteps[$id]);
 				}
 				sort($availableSteps);
-				if (empty($availableSteps) && $busy == 0 && empty($pendingSteps)) {
-					break;
-				}
 
 				// Allocate to free workers
 				if (!empty($availableSteps)) {
@@ -95,6 +92,10 @@
 				}
 				echo '  ', implode('', $order);
 				echo "\n";
+			}
+
+			if (empty($availableSteps) && $busy == 0 && empty($pendingSteps)) {
+				break;
 			}
 
 			// All possible workers are busy, advance as far as possible.
