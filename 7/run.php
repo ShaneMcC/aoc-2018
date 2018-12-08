@@ -1,11 +1,12 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['custom', 'workers:', 'step:', 'multiplier:'];
+	$__CLI['long'] = ['custom', 'workers:', 'step:', 'multiplier:', 'noskip'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --custom             Enable custom mode, to run the input with the given settings';
 	$__CLI['extrahelp'][] = '      --workers <#>        Run the input with this many workers (Custom Mode)';
 	$__CLI['extrahelp'][] = '      --step <#>           Per-Step added time (Custom Mode)';
 	$__CLI['extrahelp'][] = '      --multiplier <#>     Per-Step time multiplier (Custom Mode)';
+	$__CLI['extrahelp'][] = '      --noskip             Don\'t skip seconds.';
 
 	require_once(dirname(__FILE__) . '/../common/common.php');
 
@@ -22,7 +23,7 @@
 	}
 
 	function getSteps($workerCount, $perStep, $multiplier) {
-		global $steps;
+		global $steps, $__CLIOPTS;
 
 		$order = [];
 		$pendingSteps = $steps;
@@ -38,13 +39,11 @@
 			echo "\n";
 		}
 
-		$time = -1;
 		$busy = 0;
-		while (count($order) != count($steps)) {
-			$time++;
-
+		for ($time = 0; true; $time++) {
 			// Step all workers.
 			$busy = 0;
+			$minRemaining = PHP_INT_MAX;
 			foreach ($workers as $id => $w) {
 				if (empty($w['step'])) { continue; }
 
@@ -54,10 +53,11 @@
 					$workers[$id]['step'] = '';
 				} else {
 					$busy++;
+					$minRemaining = min($minRemaining, $workers[$id]['remaining']);
 				}
 			}
 
-			// Find any pending steps.
+
 			if ($busy != $workerCount) {
 				foreach ($pendingSteps as $id => $step) {
 					foreach ($step['requires'] as $b) {
@@ -70,16 +70,20 @@
 					unset($pendingSteps[$id]);
 				}
 				sort($availableSteps);
-			}
+				if (empty($availableSteps) && $busy == 0 && empty($pendingSteps)) {
+					break;
+				}
 
-			// Allocate to free workers
-			if (!empty($availableSteps)) {
-				foreach ($workers as $id => $w) {
-					if (empty($w['step']) && !empty($availableSteps)) {
-						$s = array_shift($availableSteps);
-						$workers[$id]['step'] = $s;
-						$workers[$id]['remaining'] = $perStep + ($multiplier * (ord($s) - 64));
-						$busy++;
+				// Allocate to free workers
+				if (!empty($availableSteps)) {
+					foreach ($workers as $id => $w) {
+						if (empty($w['step']) && !empty($availableSteps)) {
+							$s = array_shift($availableSteps);
+							$workers[$id]['step'] = $s;
+							$workers[$id]['remaining'] = $perStep + ($multiplier * (ord($s) - 64));
+							$minRemaining = min($minRemaining, $workers[$id]['remaining']);
+							$busy++;
+						}
 					}
 				}
 			}
@@ -91,6 +95,20 @@
 				}
 				echo '  ', implode('', $order);
 				echo "\n";
+			}
+
+			// All possible workers are busy, advance as far as possible.
+			if ($minRemaining > 1 && ($busy == $workerCount || empty($availableSteps)) && !isset($__CLIOPTS['noskip'])) {
+				// Account for the fact the first thing we do in the loop is
+				// do a second of work.
+				$minRemaining--;
+				$time += $minRemaining;
+
+				if (isDebug()) { echo ' ... Skipping ', $minRemaining, ' ...', "\n"; }
+
+				foreach ($workers as $id => $w) {
+					$workers[$id]['remaining'] -= $minRemaining;
+				}
 			}
 		}
 
