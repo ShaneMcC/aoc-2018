@@ -7,9 +7,10 @@
 
 	$nodeID = 0;
 	$nodes = [];
+	$metaTotal = 0;
 
 	function parse($data, $pos = 0) {
-		global $nodeID, $nodes;
+		global $nodeID, $nodes, $metaTotal;
 
 		$startPos = $pos;
 
@@ -26,6 +27,7 @@
 
 		for ($i = 0; $i < $metadataCount; $i++) {
 			$node['metadata'][] = $data[$pos + $i];
+			$metaTotal += $data[$pos + $i];
 		}
 		$pos += $metadataCount;
 
@@ -37,10 +39,7 @@
 
 	parse($entries);
 
-	$part1 = 0;
-	foreach ($nodes as $node) { $part1 += array_sum($node['metadata']); }
-
-	echo 'Part 1: ', $part1, "\n";
+	echo 'Part 1: ', $metaTotal, "\n";
 
 	function getValue($nodeid) {
 		global $nodes;
