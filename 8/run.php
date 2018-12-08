@@ -19,13 +19,12 @@
 
 		$node = ['children' => [], 'metadata' => [], 'value' => 0];
 		for ($i = 0; $i < $childCount; $i++) {
-			[$id, $endPos] = parse($data, $pos);
-			$pos = $endPos;
+			list($id, $pos) = parse($data, $pos);
 			$node['children'][] = $id;
 		}
 
 		for ($i = 0; $i < $metadataCount; $i++) {
-			$meta = $data[$pos + $i];
+			$meta = $data[$pos++];
 			$node['metadata'][] = $meta;
 			$metaTotal += $meta;
 
@@ -35,13 +34,10 @@
 				$child = $meta - 1;
 				if (isset($node['children'][$child])) {
 					$childID = $node['children'][$child];
-					$node['value'] += isset($nodes[$childID]) ? $nodes[$childID]['value'] : 0;
+					$node['value'] += $nodes[$childID]['value'];
 				}
 			}
 		}
-		$pos += $metadataCount;
-
-		if (isDebug()) { echo 'Found node ', $myID, ' at pos: ', $startPos, ' with ', $childCount, ' children and ', $metadataCount, ' data ending at ', $pos, "\n"; }
 
 		$nodes[$myID] = $node;
 		return [$myID, $pos];
