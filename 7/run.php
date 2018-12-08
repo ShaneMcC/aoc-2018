@@ -1,5 +1,12 @@
 #!/usr/bin/php
 <?php
+	$__CLI['long'] = ['custom', 'workers:', 'step:', 'multiplier:'];
+	$__CLI['extrahelp'] = [];
+	$__CLI['extrahelp'][] = '      --custom             Enable custom mode, to run the input with the given settings';
+	$__CLI['extrahelp'][] = '      --workers <#>        Run the input with this many workers (Custom Mode)';
+	$__CLI['extrahelp'][] = '      --step <#>           Per-Step added time (Custom Mode)';
+	$__CLI['extrahelp'][] = '      --multiplier <#>     Per-Step time multiplier (Custom Mode)';
+
 	require_once(dirname(__FILE__) . '/../common/common.php');
 
 	$input = getInputLines();
@@ -90,8 +97,26 @@
 		return [$order, $time];
 	}
 
-	$part1 = getSteps(1, 0, 0);
-	echo 'Part 1: ', implode('', $part1[0]), "\n";
 
-	$part2 = isTest() ? getSteps(2, 0, 1) : getSteps(5, 60, 1);
-	echo 'Part 2: ', $part2[1], "\n";
+	if (isset($__CLIOPTS['custom'])) {
+		$workers = isset($__CLIOPTS['workers']) ? $__CLIOPTS['workers'] : 5;
+		$perStep = isset($__CLIOPTS['step']) ? $__CLIOPTS['step'] : 60;
+		$multiplier = isset($__CLIOPTS['multiplier']) ? $__CLIOPTS['multiplier'] : 1;
+
+		echo 'Running in custom mode.', "\n";
+		echo '          Workers: ', $workers, "\n";
+		echo '    Per-Step Time: ', $perStep, "\n";
+		echo '       Multiplier: ', $multiplier, "\n";
+		echo "\n";
+
+		list($order, $time) = getSteps($workers, $perStep, $multiplier);
+
+		echo 'Order: ', implode('', $order), "\n";
+		echo ' Time: ', $time, "\n";
+	} else {
+		$part1 = getSteps(1, 0, 0);
+		echo 'Part 1: ', implode('', $part1[0]), "\n";
+
+		$part2 = isTest() ? getSteps(2, 0, 1) : getSteps(5, 60, 1);
+		echo 'Part 2: ', $part2[1], "\n";
+	}
