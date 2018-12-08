@@ -9,16 +9,15 @@
 	$nodes = [];
 	$metaTotal = 0;
 
-	function parse($data, $pos = 0) {
+	function parse($data, $startPos = 0) {
 		global $nodeID, $nodes, $metaTotal;
 
-		$startPos = $pos;
-
+		$pos = $startPos;
 		$myID = $nodeID++;
 		$childCount = $data[$pos++];
 		$metadataCount = $data[$pos++];
 
-		$node = ['children' => [], 'metadata' => []];
+		$node = ['children' => [], 'metadata' => [], 'value' => 0];
 		for ($i = 0; $i < $childCount; $i++) {
 			[$id, $endPos] = parse($data, $pos);
 			$pos = $endPos;
@@ -26,8 +25,19 @@
 		}
 
 		for ($i = 0; $i < $metadataCount; $i++) {
-			$node['metadata'][] = $data[$pos + $i];
-			$metaTotal += $data[$pos + $i];
+			$meta = $data[$pos + $i];
+			$node['metadata'][] = $meta;
+			$metaTotal += $meta;
+
+			if ($childCount == 0) {
+				$node['value'] += $meta;
+			} else {
+				$child = $meta - 1;
+				if (isset($node['children'][$child])) {
+					$childID = $node['children'][$child];
+					$node['value'] += isset($nodes[$childID]) ? $nodes[$childID]['value'] : 0;
+				}
+			}
 		}
 		$pos += $metadataCount;
 
@@ -36,32 +46,7 @@
 		$nodes[$myID] = $node;
 		return [$myID, $pos];
 	}
-
 	parse($entries);
 
 	echo 'Part 1: ', $metaTotal, "\n";
-
-	function getValue($nodeid) {
-		global $nodes;
-
-		$value = 0;
-
-		$node = $nodes[$nodeid];
-		if (empty($node['children'])) {
-			$value += array_sum($node['metadata']);
-		} else {
-			foreach ($node['metadata'] as $child) {
-				$child--; // We are 0-indexed.
-
-				if (isset($node['children'][$child])) {
-					$childID = $node['children'][$child];
-					$value += getValue($childID);
-				}
-
-			}
-		}
-
-		return $value;
-	}
-
-	echo 'Part 2: ', getValue(0), "\n";
+	echo 'Part 2: ', $nodes[0]['value'], "\n";
