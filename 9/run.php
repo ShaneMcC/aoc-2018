@@ -7,39 +7,35 @@
 	list($all, $players, $lastMarble) = $m;
 
 	class Marble {
-		private static $marbles = [];
-
 		private $value;
 		private $next;
 		private $prev;
 
 		public function __construct($value) {
 			$this->value = $value;
-			$this->next = $value;
-			$this->prev = $value;
-
-			Marble::$marbles[$value] = $this;
+			$this->next = $this;
+			$this->prev = $this;
 		}
 
 		public function insertAfter($marble) {
-			Marble::$marbles[$marble->value()]->prev = $this->value();
-			Marble::$marbles[$marble->value()]->next = $this->next;
+			$marble->prev = $this;
+			$marble->next = $this->next;
 
-			Marble::$marbles[$this->next]->prev = $marble->value();
-			$this->next = $marble->value();
+			$this->next->prev = $marble;
+			$this->next = $marble;
 		}
 
 		public function next() {
-			return Marble::$marbles[$this->next];
+			return $this->next;
 		}
 
 		public function prev() {
-			return Marble::$marbles[$this->prev];
+			return $this->prev;
 		}
 
 		public function remove() {
-			Marble::$marbles[$this->prev]->next = $this->next;
-			Marble::$marbles[$this->next]->prev = $this->prev;
+			$this->prev->next = $this->next;
+			$this->next->prev = $this->prev;
 		}
 
 		public function value() {
@@ -122,6 +118,14 @@
 			return max($this->players);
 		}
 	}
+
+	// Urgh.
+	//
+	// Garbage collector can't handle too many nested objects, so let's just
+	// disable it. ¯\_(ツ)_/¯
+	//
+	// https://bugs.php.net/bug.php?id=72411 => https://bugs.php.net/bug.php?id=68606
+	gc_disable();
 
 	$game = new Game($players);
 
