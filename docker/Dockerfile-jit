@@ -1,0 +1,11 @@
+FROM dmitrybalabka/php-jit
+
+ADD entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh && \
+    chown -R nobody: /entrypoint.sh
+
+USER nobody
+
+CMD /entrypoint.sh
+VOLUME /code
