@@ -6,86 +6,131 @@
 	preg_match('#([0-9]+) players; last marble is worth ([0-9]+) points#SADi', $input, $m);
 	list($all, $players, $lastMarble) = $m;
 
-	function placeMarble($id) {
-		global $marbles, $current, $elves, $currentElf;
+	class Marble {
+		private static $marbles = [];
 
-		if ($id % 23 == 0) {
-			$elves[$currentElf] += $id;
+		private $value;
+		private $next;
+		private $prev;
 
-			// Get the 7th-previous marble.
-			$prev = $current;
-			for ($i = 0; $i < 7; $i++) {
-				$prev = $marbles[$prev]['prev'];
-			}
-			// Remove it.
+		public function __construct($value) {
+			$this->value = $value;
+			$this->next = $value;
+			$this->prev = $value;
 
-			$myPrev = $marbles[$prev]['prev'];
-			$myNext = $marbles[$prev]['next'];
+			Marble::$marbles[$value] = $this;
+		}
 
-			$marbles[$myPrev]['next'] = $myNext;
-			$marbles[$myNext]['prev'] = $myPrev;
+		public function insertAfter($marble) {
+			Marble::$marbles[$marble->value()]->prev = $this->value();
+			Marble::$marbles[$marble->value()]->next = $this->next;
 
-			$elves[$currentElf] += $prev;
-			$current = $myNext;
+			Marble::$marbles[$this->next]->prev = $marble->value();
+			$this->next = $marble->value();
+		}
 
-		} else {
-			$nextBefore = $marbles[$current]['next'];
-			$nextAfter = $marbles[$nextBefore]['next'];
+		public function next() {
+			return Marble::$marbles[$this->next];
+		}
 
-			$marbles[$id] = ['prev' => $nextBefore, 'next' => $nextAfter];
-			$marbles[$nextBefore]['next'] = $id;
-			$marbles[$nextAfter]['prev'] = $id;
-			$current = $id;
+		public function prev() {
+			return Marble::$marbles[$this->prev];
+		}
+
+		public function remove() {
+			Marble::$marbles[$this->prev]->next = $this->next;
+			Marble::$marbles[$this->next]->prev = $this->prev;
+		}
+
+		public function value() {
+			return $this->value;
+		}
+
+		public function __toString() {
+			return (String)$this->value();
 		}
 	}
 
-	function displayMarbles() {
-		global $marbles, $current;
+	class Game {
+		private $players;
+		private $currentPlayer = '-';
 
-		$id = 0;
-		do {
-			echo ' ';
-			echo $current == $id ? '(' : ' ';
-			echo $id;
-			echo $current == $id ? ')' : ' ';
+		private $lastMarble;
+		private $marbles;
+		private $currentMarble;
 
-			$id = $marbles[$id]['next'];
-		} while ($id != 0);
-	}
+		public function __construct($players, $lastMarble) {
+			$this->players = array_fill(0, $players, 0);
+			$this->lastMarble = $lastMarble;
 
-	function playGame($players, $lastMarble) {
-		global $marbles, $current, $elves, $currentElf;
+			$this->currentMarble = $this->marbles = new Marble(0);
+		}
 
-		$marbles = [0 => ['prev' => 0, 'next' => 0]];
-		$elves = [];
-		for ($i = 0; $i < $players; $i++) { $elves[$i] = 0; }
-		$current = 0;
-		$currentElf = 0;
+		public function display($currentPlayer = '-') {
+			$marble = $this->marbles;
 
-		if (isDebug()) {
-			echo '[-]';
-			displayMarbles();
+			echo '[', $currentPlayer, '] ';
+			do {
+				echo ' ';
+				echo $this->currentMarble == $marble ? '(' : ' ';
+				echo $marble;
+				echo $this->currentMarble == $marble ? ')' : ' ';
+
+				$marble = $marble->next();
+			} while ($marble != $this->marbles);
 			echo "\n";
 		}
 
-		$nextMarble = 1;
-		while (true) {
-			placeMarble($nextMarble++);
+		public function placeMarble($id, $player) {
+			if ($id % 23 == 0) {
+				$this->players[$player] += $id;
 
-			if (isDebug()) {
-				echo '[', $currentElf, ']';
-				displayMarbles();
-				echo "\n";
+				// Get the 7th-previous marble.
+				$prev = $this->currentMarble->prev()->prev()->prev()->prev()->prev()->prev()->prev();
+
+				// Change the pointer.
+				$this->currentMarble = $prev->next();
+
+				// Remove it.
+				$prev->remove();
+
+				// Add the score.
+				$this->players[$player] += $prev->value();
+			} else {
+				$new = new Marble($id);
+				$this->currentMarble->next()->insertAfter($new);
+				$this->currentMarble = $new;
 			}
-
-			if ($nextMarble >= $lastMarble) { break; }
-
-			$currentElf = ($currentElf + 1) % count($elves);
 		}
 
-		return max($elves);
+		public function play() {
+			$currentPlayer = 0;
+			$nextMarble = 1;
+			while (true) {
+				$this->placeMarble($nextMarble++, $currentPlayer);
+
+				if (isDebug()) { $this->display($currentPlayer); }
+
+				if ($nextMarble >= $this->lastMarble) { break; }
+
+				$currentPlayer = ($currentPlayer + 1) % count($this->players);
+			}
+
+			return $this;
+		}
+
+		public function getScores() {
+			return $this->players;
+		}
+
+		public function getBestScore() {
+			return max($this->players);
+		}
 	}
 
-	echo 'Part 1: ', playGame($players, $lastMarble), "\n";
+	// echo (new Game(9, 26))->play()->getBestScore();
+	echo 'Part 1: ', (new Game($players, $lastMarble))->play()->getBestScore(), "\n";
 
-	echo 'Part 2: ', playGame($players, $lastMarble * 100), "\n";
+	if (!isTest()) {
+		echo 'Part 2: ', (new Game($players, $lastMarble * 100))->play()->getBestScore(), "\n";
+	}
