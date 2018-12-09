@@ -6,12 +6,6 @@
 	preg_match('#([0-9]+) players; last marble is worth ([0-9]+) points#SADi', $input, $m);
 	list($all, $players, $lastMarble) = $m;
 
-	$marbles = [0 => ['prev' => 0, 'next' => 0]];
-	$elves = [];
-	for ($i = 0; $i < $players; $i++) { $elves[$i] = 0; }
-	$current = 0;
-	$currentElf = 0;
-
 	function placeMarble($id) {
 		global $marbles, $current, $elves, $currentElf;
 
@@ -59,25 +53,39 @@
 		} while ($id != 0);
 	}
 
-	if (isDebug()) {
-		echo '[-]';
-		displayMarbles();
-		echo "\n";
-	}
+	function playGame($players, $lastMarble) {
+		global $marbles, $current, $elves, $currentElf;
 
-	$nextMarble = 1;
-	while (true) {
-		placeMarble($nextMarble++);
+		$marbles = [0 => ['prev' => 0, 'next' => 0]];
+		$elves = [];
+		for ($i = 0; $i < $players; $i++) { $elves[$i] = 0; }
+		$current = 0;
+		$currentElf = 0;
 
 		if (isDebug()) {
-			echo '[', $currentElf, ']';
+			echo '[-]';
 			displayMarbles();
 			echo "\n";
 		}
 
-		if ($nextMarble >= $lastMarble) { break; }
+		$nextMarble = 1;
+		while (true) {
+			placeMarble($nextMarble++);
 
-		$currentElf = ($currentElf + 1) % count($elves);
+			if (isDebug()) {
+				echo '[', $currentElf, ']';
+				displayMarbles();
+				echo "\n";
+			}
+
+			if ($nextMarble >= $lastMarble) { break; }
+
+			$currentElf = ($currentElf + 1) % count($elves);
+		}
+
+		return max($elves);
 	}
 
-	echo 'Part 1: ', max($elves), "\n";
+	echo 'Part 1: ', playGame($players, $lastMarble), "\n";
+
+	echo 'Part 2: ', playGame($players, $lastMarble * 100), "\n";
