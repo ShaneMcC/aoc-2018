@@ -104,7 +104,7 @@
 		}
 
 		public function play($lastMarble) {
-			while ($this->nextMarble < $lastMarble) {
+			while ($this->nextMarble <= $lastMarble) {
 				$this->placeMarble($this->nextMarble++, $this->currentPlayer);
 				if (isDebug()) { $this->display($this->currentPlayer); }
 
