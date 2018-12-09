@@ -2,9 +2,14 @@
 
 IMAGE=shanemcc/aoc-2018-04
 DOCKERFILE="Dockerfile"
+
 if [ "${1}" = "--jit" ]; then
 	IMAGE="${IMAGE}-jit"
 	DOCKERFILE="${DOCKERFILE}-jit"
+	shift;
+elif [ "${1}" = "--hhvm" ]; then
+	IMAGE="${IMAGE}-hhvm"
+	DOCKERFILE="${DOCKERFILE}-hhvm"
 	shift;
 fi;
 
