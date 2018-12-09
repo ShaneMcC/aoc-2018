@@ -53,15 +53,15 @@
 
 	class Game {
 		private $players;
-		private $currentPlayer = '-';
 
-		private $lastMarble;
 		private $marbles;
 		private $currentMarble;
 
-		public function __construct($players, $lastMarble) {
+		private $currentPlayer = 0;
+		private $nextMarble = 1;
+
+		public function __construct($players) {
 			$this->players = array_fill(0, $players, 0);
-			$this->lastMarble = $lastMarble;
 
 			$this->currentMarble = $this->marbles = new Marble(0);
 		}
@@ -103,17 +103,12 @@
 			}
 		}
 
-		public function play() {
-			$currentPlayer = 0;
-			$nextMarble = 1;
-			while (true) {
-				$this->placeMarble($nextMarble++, $currentPlayer);
+		public function play($lastMarble) {
+			while ($this->nextMarble < $lastMarble) {
+				$this->placeMarble($this->nextMarble++, $this->currentPlayer);
+				if (isDebug()) { $this->display($this->currentPlayer); }
 
-				if (isDebug()) { $this->display($currentPlayer); }
-
-				if ($nextMarble >= $this->lastMarble) { break; }
-
-				$currentPlayer = ($currentPlayer + 1) % count($this->players);
+				$this->currentPlayer = ($this->currentPlayer + 1) % count($this->players);
 			}
 
 			return $this;
@@ -128,9 +123,10 @@
 		}
 	}
 
-	// echo (new Game(9, 26))->play()->getBestScore();
-	echo 'Part 1: ', (new Game($players, $lastMarble))->play()->getBestScore(), "\n";
+	$game = new Game($players);
+
+	echo 'Part 1: ', $game->play($lastMarble)->getBestScore(), "\n";
 
 	if (!isTest()) {
-		echo 'Part 2: ', (new Game($players, $lastMarble * 100))->play()->getBestScore(), "\n";
+		echo 'Part 2: ', $game->play($lastMarble * 100)->getBestScore(), "\n";
 	}
