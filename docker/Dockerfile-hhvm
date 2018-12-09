@@ -3,7 +3,10 @@ FROM hhvm/hhvm
 ADD entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh && \
-    chown -R nobody: /entrypoint.sh
+    mkdir /nonexistent/ && \
+    chown -R nobody: /entrypoint.sh /nonexistent/
+
+USER nobody
 
 CMD /entrypoint.sh
 VOLUME /code
