@@ -1,10 +1,14 @@
 #!/usr/bin/php
 <?php
 	require_once(dirname(__FILE__) . '/../common/common.php');
-	$input = getInputLine();
+	$input = isTest() ? getInputLines() : [getInputLine()];
 
-	preg_match('#([0-9]+) players; last marble is worth ([0-9]+) points#SADi', $input, $m);
-	list($all, $players, $lastMarble) = $m;
+	$games = [];
+	foreach ($input as $line) {
+		preg_match('#([0-9]+) players; last marble is worth ([0-9]+) points#SADi', $line, $m);
+		list($all, $players, $lastMarble) = $m;
+		$games[] = [$players, $lastMarble];
+	}
 
 	class Marble {
 		private $value;
@@ -127,10 +131,14 @@
 	// https://bugs.php.net/bug.php?id=72411 => https://bugs.php.net/bug.php?id=68606
 	gc_disable();
 
-	$game = new Game($players);
+	if (isTest()) {
+		foreach ($games as $g) {
+			$game = new Game($g[0]);
+			echo $g[0], ' players; last marble is worth ', $g[1], ' points: high score is ', $game->play($g[1])->getBestScore(), "\n";
+		}
+	} else {
+		$game = new Game($players);
 
-	echo 'Part 1: ', $game->play($lastMarble)->getBestScore(), "\n";
-
-	if (!isTest()) {
+		echo 'Part 1: ', $game->play($lastMarble)->getBestScore(), "\n";
 		echo 'Part 2: ', $game->play($lastMarble * 100)->getBestScore(), "\n";
 	}
