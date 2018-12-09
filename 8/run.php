@@ -5,22 +5,19 @@
 
 	$entries = explode(' ', $input);
 
-	$nodeID = 0;
-	$nodes = [];
 	$metaTotal = 0;
 
 	function parse($data, $startPos = 0) {
-		global $nodeID, $nodes, $metaTotal;
+		global $metaTotal;
 
 		$pos = $startPos;
-		$myID = $nodeID++;
 		$childCount = $data[$pos++];
 		$metadataCount = $data[$pos++];
 
 		$node = ['children' => [], 'metadata' => [], 'value' => 0];
 		for ($i = 0; $i < $childCount; $i++) {
-			list($id, $pos) = parse($data, $pos);
-			$node['children'][] = $id;
+			list($child, $pos) = parse($data, $pos);
+			$node['children'][] = $child;
 		}
 
 		for ($i = 0; $i < $metadataCount; $i++) {
@@ -33,16 +30,14 @@
 			} else {
 				$child = $meta - 1;
 				if (isset($node['children'][$child])) {
-					$childID = $node['children'][$child];
-					$node['value'] += $nodes[$childID]['value'];
+					$node['value'] += $node['children'][$child]['value'];
 				}
 			}
 		}
 
-		$nodes[$myID] = $node;
-		return [$myID, $pos];
+		return [$node, $pos];
 	}
-	parse($entries);
+	list($root, $endpos) = parse($entries);
 
 	echo 'Part 1: ', $metaTotal, "\n";
-	echo 'Part 2: ', $nodes[0]['value'], "\n";
+	echo 'Part 2: ', $root['value'], "\n";
