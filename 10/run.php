@@ -3,6 +3,33 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
+	// A
+	// B
+	// C
+	// D
+	// E
+	$encodedChars['fc808080f88080808080'] = 'F';
+	// G
+	$encodedChars['84848484fc8484848484'] = 'H';
+	// I
+	$encodedChars['1c080808080808888870'] = 'J';
+	// K
+	$encodedChars['808080808080808080fc'] = 'L';
+	// M
+	// N
+	// O
+	$encodedChars['f8848484f88080808080'] = 'P';
+	// Q
+	$encodedChars['f8848484f89088888484'] = 'R';
+	// S
+	// T
+	// U
+	// V
+	// W
+	// X
+	// Y
+	$encodedChars['fc0404081020408080fc'] = 'Z';
+
 	$points = [];
 	foreach ($input as $line) {
 		preg_match('#position=<\s?([-0-9]+), \s?([-0-9]+)> velocity=<\s?([-0-9]+), \s?([-0-9]+)>#SADi', $line, $m);
@@ -10,7 +37,7 @@
 		$points[] = ['x' => (int)$x, 'y' => (int)$y, 'vx' => (int)$vx, 'vy' => (int)$vy];
 	}
 
-	function drawPoints($difference = 0) {
+	function getOutput($difference = 0, $draw = false) {
 		global $points;
 
 		$maxY = $maxX = PHP_INT_MIN;
@@ -28,14 +55,36 @@
 			$maxY = max($maxY, $y);
 		}
 
+		$characters = [];
+
+		$letterWidth = 8;
+		// Make sure we are the right width for grabbing letters.
+		$maxX += $letterWidth - (($maxX + 1 - $minX) % $letterWidth);
+
 		for ($y = $minY; $y <= $maxY; $y++) {
 			for ($x = $minX; $x <= $maxX; $x++) {
-				echo isset($current[$y][$x]) ? $current[$y][$x] : '.';
+				$out = isset($current[$y][$x]) ? $current[$y][$x] : '.';
+				if ($draw) { echo $out; }
+
+				$c = (int)(($x - $minX) / $letterWidth);
+				$characters[$c][$y - $minY][] = $out;
 			}
-			echo "\n";
+			if ($draw) { echo "\n"; }
 		}
 
-		$word = '';
+		$result = '';
+		foreach ($characters as $character) { $result .= charToLetter($character); }
+		return $result;
+	}
+
+	function charToLetter($character) {
+		global $encodedChars;
+		$id = '';
+		foreach ($character as $bit) {
+			$id .= sprintf('%02s', dechex(bindec(str_replace(['.', '#'], [0, 1], implode('', $bit)))));
+		}
+		if (!isset($encodedChars[$id])) { echo 'Unknown Letter: ', $id, "\n"; }
+		return isset($encodedChars[$id]) ? $encodedChars[$id] : '?';
 	}
 
 	function advance() {
@@ -63,7 +112,7 @@
 		$height = $maxY - $minY;
 
 		if ($width > $lastWidth || $height > $lastHeight) {
-			$word = drawPoints(-1);
+			$word = getOutput(-1, isTest() || isDebug());
 			echo 'Part 1: ', $word, "\n";
 			echo 'Part 2: ', $i, "\n";
 			die();
