@@ -13,7 +13,8 @@
 	function drawPoints($difference = 0) {
 		global $points;
 
-		$maxY = $maxX = $minY = $minX = 0;
+		$maxY = $maxX = PHP_INT_MIN;
+		$minY = $minX = PHP_INT_MAX;
 		$current = [];
 
 		foreach ($points as $point) {
@@ -33,6 +34,8 @@
 			}
 			echo "\n";
 		}
+
+		$word = '';
 	}
 
 	function advance() {
@@ -43,10 +46,10 @@
 			$points[$id]['x'] += $points[$id]['vx'];
 			$points[$id]['y'] += $points[$id]['vy'];
 
-			$minX = min($minX, $point['x']);
-			$maxX = max($maxX, $point['x']);
-			$minY = min($minY, $point['y']);
-			$maxY = max($maxY, $point['y']);
+			$minX = min($minX, $points[$id]['x']);
+			$maxX = max($maxX, $points[$id]['x']);
+			$minY = min($minY, $points[$id]['y']);
+			$maxY = max($maxY, $points[$id]['y']);
 		}
 
 		return [$minX, $minY, $maxX, $maxY];
@@ -54,14 +57,15 @@
 
 	$lastHeight = $lastWidth = PHP_INT_MAX;
 
-	for ($i = 0; $i < 50000; $i++) {
+	for ($i = 0; true; $i++) {
 		[$minX, $minY, $maxX, $maxY] = advance();
 		$width = $maxX - $minX;
 		$height = $maxY - $minY;
 
 		if ($width > $lastWidth || $height > $lastHeight) {
-			drawPoints(-2);
-			echo $i - 1;
+			$word = drawPoints(-1);
+			echo 'Part 1: ', $word, "\n";
+			echo 'Part 2: ', $i, "\n";
 			die();
 		}
 
