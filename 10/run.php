@@ -28,24 +28,33 @@
 		$points[] = ['x' => (int)$x, 'y' => (int)$y, 'vx' => (int)$vx, 'vy' => (int)$vy];
 	}
 
-	function getOutput($difference = 0, $draw = false) {
+	function getAt($time) {
 		global $points;
 
 		$maxY = $maxX = PHP_INT_MIN;
 		$minY = $minX = PHP_INT_MAX;
-		$current = [];
 
-		foreach ($points as $point) {
-			$x = $point['x'] += ($difference * $point['vx']);
-			$y = $point['y'] += ($difference * $point['vy']);
+		$pointsAt = [];
+		foreach ($points as $id => $point) {
+			$x = $point['x'] += ($time * $point['vx']);
+			$y = $point['y'] += ($time * $point['vy']);
+			$pointsAt[] = [$x, $y];
 
-			$current[$y][$x] = '#';
 			$minX = min($minX, $x);
 			$maxX = max($maxX, $x);
 			$minY = min($minY, $y);
 			$maxY = max($maxY, $y);
 		}
 
+		return [$minX, $minY, $maxX, $maxY, $pointsAt];
+	}
+
+	function getOutput($time = 0, $draw = false) {
+		global $points;
+
+		$current = [];
+		[$minX, $minY, $maxX, $maxY, $pointsAt] = getAt($time);
+		foreach ($pointsAt as $point) { $current[$point[1]][$point[0]] = '#'; }
 		$characters = [];
 
 		$letterWidth = 8;
@@ -84,32 +93,15 @@
 		return isset($encodedChars[$id]) ? $encodedChars[$id] : '?';
 	}
 
-	function advance() {
-		global $points;
-
-		$maxY = $maxX = $minY = $minX = 0;
-		foreach ($points as $id => $point) {
-			$points[$id]['x'] += $points[$id]['vx'];
-			$points[$id]['y'] += $points[$id]['vy'];
-
-			$minX = min($minX, $points[$id]['x']);
-			$maxX = max($maxX, $points[$id]['x']);
-			$minY = min($minY, $points[$id]['y']);
-			$maxY = max($maxY, $points[$id]['y']);
-		}
-
-		return [$minX, $minY, $maxX, $maxY];
-	}
-
 	$lastHeight = $lastWidth = PHP_INT_MAX;
 
 	for ($i = 0; true; $i++) {
-		[$minX, $minY, $maxX, $maxY] = advance();
+		[$minX, $minY, $maxX, $maxY, $pointsAt] = getAt($i);
 		$width = $maxX - $minX;
 		$height = $maxY - $minY;
 
 		if ($width > $lastWidth || $height > $lastHeight) {
-			$word = getOutput(-1, isTest() || isDebug());
+			$word = getOutput($i - 1, isTest() || isDebug());
 			echo 'Part 1: ', $word, "\n";
 			echo 'Part 2: ', $i, "\n";
 			die();
