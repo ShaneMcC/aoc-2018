@@ -103,7 +103,7 @@
 		if ($width > $lastWidth || $height > $lastHeight) {
 			$word = getOutput($i - 1, isTest() || isDebug());
 			echo 'Part 1: ', $word, "\n";
-			echo 'Part 2: ', $i, "\n";
+			echo 'Part 2: ', $i - 1, "\n";
 			die();
 		}
 
