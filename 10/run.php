@@ -3,32 +3,23 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
-	// A
-	// B
-	// C
-	// D
-	// E
-	$encodedChars['fc808080f88080808080'] = 'F';
-	// G
-	$encodedChars['84848484fc8484848484'] = 'H';
-	// I
-	$encodedChars['1c080808080808888870'] = 'J';
-	// K
-	$encodedChars['808080808080808080fc'] = 'L';
-	// M
-	// N
-	// O
-	$encodedChars['f8848484f88080808080'] = 'P';
-	// Q
-	$encodedChars['f8848484f89088888484'] = 'R';
-	// S
-	// T
-	// U
-	// V
-	// W
-	// X
-	// Y
-	$encodedChars['fc0404081020408080fc'] = 'Z';
+	$encodedChars = array (
+	  '3048848484fc84848484' => 'A',
+	  'f8848484f884848484f8' => 'B',
+	  '78848080808080808478' => 'C',
+	  'fc808080f880808080fc' => 'E',
+	  'fc808080f88080808080' => 'F',
+	  '78848080809c84848c74' => 'G',
+	  '84848484fc8484848484' => 'H',
+	  '1c080808080808888870' => 'J',
+	  '848890a0c0c0a0908884' => 'K',
+	  '808080808080808080fc' => 'L',
+	  '84c4c4a4a494948c8c84' => 'N',
+	  'f8848484f88080808080' => 'P',
+	  'f8848484f89088888484' => 'R',
+	  '84844848303048488484' => 'X',
+	  'fc0404081020408080fc' => 'Z',
+	);
 
 	$points = [];
 	foreach ($input as $line) {
@@ -77,12 +68,18 @@
 		return $result;
 	}
 
-	function charToLetter($character) {
-		global $encodedChars;
+	function charToID($character) {
 		$id = '';
 		foreach ($character as $bit) {
-			$id .= sprintf('%02s', dechex(bindec(str_replace(['.', '#'], [0, 1], implode('', $bit)))));
+			if (is_array($bit)) { $bit = implode('', $bit); }
+			$id .= sprintf('%02s', dechex(bindec(str_replace(['.', '#'], [0, 1], str_pad($bit, '8', '.')))));
 		}
+		return $id;
+	}
+
+	function charToLetter($character) {
+		global $encodedChars;
+		$id = charToID($character);
 		if (!isset($encodedChars[$id])) { echo 'Unknown Letter: ', $id, "\n"; }
 		return isset($encodedChars[$id]) ? $encodedChars[$id] : '?';
 	}
@@ -121,5 +118,3 @@
 		$lastHeight = $height;
 		$lastWidth = $width;
 	}
-
-
