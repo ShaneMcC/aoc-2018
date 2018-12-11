@@ -28,6 +28,32 @@
 		$points[] = ['x' => (int)$x, 'y' => (int)$y, 'vx' => (int)$vx, 'vy' => (int)$vy];
 	}
 
+	// Based on https://github.com/MageJohn/Advent-of-Code-2018/blob/master/Day%2010%3A%20The%20Stars%20Align/Day%2010%20Solutions.ipynb
+	function guessOptimalTime() {
+		global $points;
+
+		// Maximum velocity.
+		$dy = max(array_column($points, 'vy'));
+
+		// Calculate minimum points that have the opposite min/max velocities.
+		$y1 = $y2 = PHP_INT_MAX;
+		foreach ($points as $p) {
+			if ($p['vy'] == $dy) {
+				$y1 = min($y1, $p['y']);
+			}
+			if ($p['vy'] == 0 - $dy) {
+				$y2 = min($y2, $p['y']);
+			}
+		}
+
+		// Guess a time.
+		$time = ($y2 - $y1)/(2 * $dy);
+
+		return $time;
+	}
+
+
+
 	function getAt($time) {
 		global $points;
 
@@ -89,11 +115,21 @@
 	function charToLetter($character) {
 		global $encodedChars;
 		$id = charToID($character);
-		if (!isset($encodedChars[$id])) { echo 'Unknown Letter: ', $id, "\n"; }
+		if (isDebug() && !isset($encodedChars[$id])) { echo 'Unknown Letter: ', $id, "\n"; }
 		return isset($encodedChars[$id]) ? $encodedChars[$id] : '?';
 	}
 
 	$lastHeight = $lastWidth = PHP_INT_MAX;
+
+	$guess = guessOptimalTime();
+	foreach ([$guess, $guess - 1, $guess + 1] as $i) {
+		$word = getOutput($i, isTest() || isDebug());
+		if (str_replace('?', '', $word) != '') {
+			echo 'Part 1: ', $word, "\n";
+			echo 'Part 2: ', $i, "\n";
+			die();
+		}
+	}
 
 	for ($i = 0; true; $i++) {
 		[$minX, $minY, $maxX, $maxY, $pointsAt] = getAt($i);
