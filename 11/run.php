@@ -15,6 +15,7 @@
 	}
 
 	// Generate prefix-sum grid.
+	// https://en.wikipedia.org/wiki/Summed-area_table
 	foreach (yieldXY(0, 0, 300, 300) as $x => $y) {
 		// Prefix Sum is the power value of the whole square from 0,0 to x,y.
 
