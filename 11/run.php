@@ -8,10 +8,7 @@
 		$level = $rackID * $y;
 		$level += $gridSerial;
 		$level *= $rackID;
-
-		$level = strrev($level);
-		$level = strlen($level) > 2 ? $level{2} : '0';
-
+		$level = ($level / 100) % 10;
 		$level -= 5;
 
 		return $level;
@@ -70,7 +67,7 @@
 	$maxLevel = $maxX = $maxY = $maxI = 0;
 	for ($i = 1; $i < 300; $i++) {
 		if (isDebug()) { echo $i, ' '; }
-		[$x, $y, $level] = getMax($i);
+		list($x, $y, $level) = getMax($i);
 
 		if ($level > $maxLevel) {
 			$maxLevel = $level;
