@@ -14,8 +14,22 @@
 		return $level;
 	}
 
-	foreach (yieldXY(1, 1, 300, 300) as $x => $y) {
+	// Generate prefix-sum grid.
+	foreach (yieldXY(0, 0, 300, 300) as $x => $y) {
+		// Prefix Sum is the power value of the whole square from 0,0 to x,y.
+
+		// Calculate our value;
 		$grid[$y][$x] = getPowerLevel($x, $y, $gridSerial);
+
+		// Add the value above us if it exists.
+		if (isset($grid[$y - 1][$x])) { $grid[$y][$x] += $grid[$y - 1][$x]; }
+
+		// Add the value left of us if it exists.
+		if (isset($grid[$y][$x - 1])) { $grid[$y][$x] += $grid[$y][$x - 1]; }
+
+		// Because these both also include their above/left, that will add
+		// above+left twice, so remove it.
+		if (isset($grid[$y - 1][$x - 1])) { $grid[$y][$x] -= $grid[$y - 1][$x - 1]; }
 	}
 
 	function getMax($size = 3) {
@@ -27,27 +41,18 @@
 		foreach (yieldXY(1, 1, 300 - $size, 300 - $size) as $x => $y) {
 			$level = 0;
 
-			if (isset($knownPowers[$size - 1][$x][$y])) {
-				// Old level for 1-smaller grid.
-				$level += $knownPowers[$size - 1][$x][$y];
+			// Get the value of a square.
+			// This is the value of our bottom right corner.
+			$level = $grid[$y + $size - 1][$x + $size - 1];
 
-				// Add the new Y Column
-				for ($x2 = $x; $x2 < $x + $size; $x2++) {
-					$level += $grid[$y + $size - 1][$x2];
-				}
+			// Minus the value above our top-left corner.
+			$level -= $grid[$y - 1][$x + $size - 1];
 
-				// Add the new X Row excluding the corner.
-				for ($y2 = $y; $y2 < $y + $size - 1; $y2++) {
-					$level += $grid[$y2][$x + $size - 1];
-				}
-			} else {
-				// Calculate the whole thing.
-				foreach (yieldXY($x, $y, $x + $size, $y + $size, false) as $x2 => $y2) {
-					$level += $grid[$y2][$x2];
-				}
-			}
+			// Minus the value left of our top-left corner.
+			$level -= $grid[$y + $size - 1][$x - 1];
 
-			$knownPowers[$size][$x][$y] = $level;
+			// Re-Add top-left top-left corner because we removed it twice.
+			$level += $grid[$y - 1][$x - 1];
 
 			if ($level > $maxLevel) {
 				$maxLevel = $level;
@@ -55,8 +60,6 @@
 				$maxY = $y;
 			}
 		}
-
-		unset($knownPowers[$size - 1]);
 
 		return [$maxX, $maxY, $maxLevel];
 	}
@@ -66,7 +69,6 @@
 
 	$maxLevel = $maxX = $maxY = $maxI = 0;
 	for ($i = 1; $i < 300; $i++) {
-		if (isDebug()) { echo $i, ' '; }
 		list($x, $y, $level) = getMax($i);
 
 		if ($level > $maxLevel) {
