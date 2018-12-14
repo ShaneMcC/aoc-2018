@@ -3,36 +3,44 @@
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
-	$grid = [];
-	$carts = [];
-	$x = $y = 0;
+	$possibleCarts = $carts = $grid = [];
+	$maxX = $x = $y = 0;
 	foreach ($input as $in) {
 		$line = [];
 		$x = 0;
 		foreach (str_split($in) as $bit) {
 			$c = [];
 			if ($bit == '^' || $bit == 'v' || $bit == '<' || $bit == '>') {
-				$cartID = getCartID($x, $y);
-				$carts[$cartID] = ['direction' => $bit, 'lastChange' => 'r'];
+				$possibleCarts[] = ['direction' => $bit, 'x' => $x, 'y' => $y];
 				$bit = ($bit == '<' || $bit == '>') ? '-' : '|';
 			}
 
-			$line[] = $bit;
+			$line[] = ['bit' => $bit, 'crash' => false];
 			$x++;
+			$maxX = max($maxX, $x);
 		}
 		$grid[] = $line;
 		$y++;
 	}
 
+	foreach ($possibleCarts as $c) {
+		$cart = ['direction' => $c['direction'], 'lastChange' => 'r'];
+		$carts[getCartID($c['x'], $c['y'])] = $cart;
+	}
+
 	function getXY($cartID) {
-		$y = floor($cartID / 1000);
-		$x = $cartID - ($y * 1000);
+		global $maxX;
+
+		$y = floor($cartID / $maxX);
+		$x = $cartID - ($y * $maxX);
 
 		return [$x, $y];
 	}
 
 	function getCartID($x, $y) {
-		$cartID = ($y * 1000) + $x;
+		global $maxX;
+
+		$cartID = ($y * $maxX) + $x;
 
 		return $cartID;
 	}
@@ -48,16 +56,19 @@
 					echo "\033[0;32m";
 					echo $carts[$cartID]['direction'];
 					echo "\033[0m";
-					/* echo "\033[1;31m";
+				} else if ($grid[$y][$x]['crash']) {
+					echo "\033[1;31m";
 					echo 'X';
-					echo "\033[0m"; */
+					echo "\033[0m";
+					$grid[$y][$x]['crash'] = false;
 				} else {
-					echo $grid[$y][$x] ?? '';
+					echo $grid[$y][$x]['bit'] ?? '';
 				}
 			}
 			echo "\n";
 		}
 		echo "\n\n\n\n\n\n";
+		usleep(1000);
 	}
 
 	function tick() {
@@ -69,57 +80,58 @@
 		ksort($carts);
 
 		foreach (array_keys($carts) as $cart) {
-				if (!isset($carts[$cart])) { continue; }
-				list($x, $y) = getXY($cart);
+			if (!isset($carts[$cart])) { continue; }
+			list($x, $y) = getXY($cart);
 
-				// Advance the cart.
-				if ($carts[$cart]['direction'] == 'v') { $y++; }
-				else if ($carts[$cart]['direction'] == '^') { $y--; }
-				else if ($carts[$cart]['direction'] == '<') { $x--; }
-				else if ($carts[$cart]['direction'] == '>') { $x++; }
+			// Advance the cart.
+			if ($carts[$cart]['direction'] == 'v') { $y++; }
+			else if ($carts[$cart]['direction'] == '^') { $y--; }
+			else if ($carts[$cart]['direction'] == '<') { $x--; }
+			else if ($carts[$cart]['direction'] == '>') { $x++; }
 
-				// Update direction if needed.
-				$newGrid = $grid[$y][$x];
+			// Update direction if needed.
+			$newGrid = $grid[$y][$x]['bit'];
 
-				if ($newGrid == '/') {
-					if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '<'; }
-					else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '>'; }
-					else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = 'v'; }
-					else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = '^'; }
-				} else if ($newGrid == '\\') {
+			if ($newGrid == '/') {
+				if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '<'; }
+				else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '>'; }
+				else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = 'v'; }
+				else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = '^'; }
+			} else if ($newGrid == '\\') {
+				if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '>'; }
+				else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '<'; }
+				else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = '^'; }
+				else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = 'v'; }
+			} else if ($newGrid == '+') {
+				if ($carts[$cart]['lastChange'] == 'r') { $change = 'l'; }
+				if ($carts[$cart]['lastChange'] == 'l') { $change = 's'; }
+				if ($carts[$cart]['lastChange'] == 's') { $change = 'r'; }
+
+				$carts[$cart]['lastChange'] = $change;
+
+				if ($change == 'l') {
 					if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '>'; }
 					else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '<'; }
+					else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = 'v'; }
+					else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = '^'; }
+				} else if ($change == 'r') {
+					if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '<'; }
+					else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '>'; }
 					else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = '^'; }
 					else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = 'v'; }
-				} else if ($newGrid == '+') {
-					if ($carts[$cart]['lastChange'] == 'r') { $change = 'l'; }
-					if ($carts[$cart]['lastChange'] == 'l') { $change = 's'; }
-					if ($carts[$cart]['lastChange'] == 's') { $change = 'r'; }
-
-					$carts[$cart]['lastChange'] = $change;
-
-					if ($change == 'l') {
-						if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '>'; }
-						else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '<'; }
-						else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = 'v'; }
-						else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = '^'; }
-					} else if ($change == 'r') {
-						if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '<'; }
-						else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '>'; }
-						else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = '^'; }
-						else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = 'v'; }
-					}
 				}
+			}
 
-				$newID = getCartID($x, $y);
-				$cartData = $carts[$cart];
-				unset($carts[$cart]);
-				if (isset($carts[$newID])) {
-					$crashes[] = ['x' => $x, 'y' => $y];
-					unset($carts[$newID]);
-				} else {
-					$carts[$newID] = $cartData;
-				}
+			$newID = getCartID($x, $y);
+			$cartData = $carts[$cart];
+			unset($carts[$cart]);
+			if (isset($carts[$newID])) {
+				$crashes[] = ['x' => $x, 'y' => $y];
+				$grid[$y][$x]['crash'] = true;
+				unset($carts[$newID]);
+			} else {
+				$carts[$newID] = $cartData;
+			}
 
 
 		}
