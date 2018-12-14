@@ -12,16 +12,29 @@
 		foreach (str_split($in) as $bit) {
 			$c = [];
 			if ($bit == '^' || $bit == 'v' || $bit == '<' || $bit == '>') {
-				$carts[] = ['x' => $x, 'y' => $y, 'direction' => $bit, 'lastChange' => 'r', 'crashed' => false];
-				$c[] = count($carts) - 1;
+				$cartID = getCartID($x, $y);
+				$carts[$cartID] = ['direction' => $bit, 'lastChange' => 'r'];
 				$bit = ($bit == '<' || $bit == '>') ? '-' : '|';
 			}
 
-			$line[] = ['bit' => $bit, 'carts' => $c];
+			$line[] = $bit;
 			$x++;
 		}
 		$grid[] = $line;
 		$y++;
+	}
+
+	function getXY($cartID) {
+		$y = floor($cartID / 1000);
+		$x = $cartID - ($y * 1000);
+
+		return [$x, $y];
+	}
+
+	function getCartID($x, $y) {
+		$cartID = ($y * 1000) + $x;
+
+		return $cartID;
 	}
 
 	function draw() {
@@ -29,17 +42,17 @@
 
 		for ($y = 0; $y < count($grid); $y++) {
 			for ($x = 0; $x < count($grid[$y]); $x++) {
-				$cartsAtLoc = $grid[$y][$x]['carts'];
-				if (count($cartsAtLoc) == 1) {
+				$cartID = getCartID($x, $y);
+
+				if (isset($carts[$cartID])) {
 					echo "\033[0;32m";
-					echo $carts[$cartsAtLoc[0]]['direction'];
+					echo $carts[$cartID]['direction'];
 					echo "\033[0m";
-				} else if (count($cartsAtLoc) > 1) {
-					echo "\033[1;31m";
+					/* echo "\033[1;31m";
 					echo 'X';
-					echo "\033[0m";
+					echo "\033[0m"; */
 				} else {
-					echo $grid[$y][$x]['bit'] ?? '';
+					echo $grid[$y][$x] ?? '';
 				}
 			}
 			echo "\n";
@@ -53,70 +66,62 @@
 		$processed = [];
 		$crashes = [];
 
-		for ($y = 0; $y < count($grid); $y++) {
-			for ($x = 0; $x < count($grid[$y]); $x++) {
-				$gridCarts = $grid[$y][$x]['carts'];
-				$grid[$y][$x]['carts'] = [];
+		ksort($carts);
 
-				while (($cart = array_shift($gridCarts)) !== null) {
-					if (in_array($cart, $processed)) { $grid[$y][$x]['carts'][] = $cart; continue; }
-					$processed[] = $cart;
-					if ($carts[$cart]['crashed']) { continue; }
+		foreach (array_keys($carts) as $cart) {
+				if (!isset($carts[$cart])) { continue; }
+				list($x, $y) = getXY($cart);
 
-					// Advance the cart.
-					if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['y']++; }
-					else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['y']--; }
-					else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['x']--; }
-					else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['x']++; }
+				// Advance the cart.
+				if ($carts[$cart]['direction'] == 'v') { $y++; }
+				else if ($carts[$cart]['direction'] == '^') { $y--; }
+				else if ($carts[$cart]['direction'] == '<') { $x--; }
+				else if ($carts[$cart]['direction'] == '>') { $x++; }
 
-					// Update direction if needed.
-					$newGrid = $grid[$carts[$cart]['y']][$carts[$cart]['x']]['bit'];
+				// Update direction if needed.
+				$newGrid = $grid[$y][$x];
 
-					if ($newGrid == '/') {
-						if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '<'; }
-						else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '>'; }
-						else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = 'v'; }
-						else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = '^'; }
-					} else if ($newGrid == '\\') {
+				if ($newGrid == '/') {
+					if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '<'; }
+					else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '>'; }
+					else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = 'v'; }
+					else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = '^'; }
+				} else if ($newGrid == '\\') {
+					if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '>'; }
+					else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '<'; }
+					else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = '^'; }
+					else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = 'v'; }
+				} else if ($newGrid == '+') {
+					if ($carts[$cart]['lastChange'] == 'r') { $change = 'l'; }
+					if ($carts[$cart]['lastChange'] == 'l') { $change = 's'; }
+					if ($carts[$cart]['lastChange'] == 's') { $change = 'r'; }
+
+					$carts[$cart]['lastChange'] = $change;
+
+					if ($change == 'l') {
 						if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '>'; }
 						else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '<'; }
+						else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = 'v'; }
+						else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = '^'; }
+					} else if ($change == 'r') {
+						if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '<'; }
+						else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '>'; }
 						else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = '^'; }
 						else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = 'v'; }
-					} else if ($newGrid == '+') {
-						if ($carts[$cart]['lastChange'] == 'r') { $change = 'l'; }
-						if ($carts[$cart]['lastChange'] == 'l') { $change = 's'; }
-						if ($carts[$cart]['lastChange'] == 's') { $change = 'r'; }
-
-						$carts[$cart]['lastChange'] = $change;
-
-						if ($change == 'l') {
-							if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '>'; }
-							else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '<'; }
-							else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = 'v'; }
-							else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = '^'; }
-						} else if ($change == 'r') {
-							if ($carts[$cart]['direction'] == 'v') { $carts[$cart]['direction'] = '<'; }
-							else if ($carts[$cart]['direction'] == '^') { $carts[$cart]['direction'] = '>'; }
-							else if ($carts[$cart]['direction'] == '<') { $carts[$cart]['direction'] = '^'; }
-							else if ($carts[$cart]['direction'] == '>') { $carts[$cart]['direction'] = 'v'; }
-						}
-					}
-
-					$y2 = $carts[$cart]['y'];
-					$x2 = $carts[$cart]['x'];
-
-					$grid[$y2][$x2]['carts'][] = $cart;
-					if (count($grid[$y2][$x2]['carts']) > 1) {
-						$crashes[] = ['x' => $x2, 'y' => $y2, 'carts' => $grid[$y2][$x2]['carts']];
-
-						foreach ($grid[$y2][$x2]['carts'] as $cart) {
-							$carts[$cart]['crashed'] = true;
-						}
 					}
 				}
 
+				$newID = getCartID($x, $y);
+				$cartData = $carts[$cart];
+				unset($carts[$cart]);
+				if (isset($carts[$newID])) {
+					$crashes[] = ['x' => $x, 'y' => $y];
+					unset($carts[$newID]);
+				} else {
+					$carts[$newID] = $cartData;
+				}
 
-			}
+
 		}
 
 		return $crashes;
@@ -132,13 +137,6 @@
 
 		if (!empty($crashes)) {
 			foreach ($crashes as $crash) {
-				// Remove crashed carts.
-				$grid[$crash['y']][$crash['x']]['carts'] = [];
-
-				foreach ($crash['carts'] as $cart) {
-					unset($carts[$cart]);
-				}
-
 				if (isDebug()) { echo 'Crash at ', $i, ': ', $crash['x'], ',', $crash['y'], "\n"; }
 				if ($part1 == NULL) { $part1 = $crash['x'] . ',' . $crash['y']; }
 			}
@@ -146,8 +144,8 @@
 			if (count($carts) == 1) {
 				$c = array_keys($carts);
 				$c = array_shift($c);
-				$lastCart = $carts[$c];
-				$part2 = 'Last cart is ' . $c . ' at ' . $lastCart['x'] . ',' . $lastCart['y'];
+				list($x, $y) = getXY($c);
+				$part2 = 'Last cart is at ' . $x . ',' . $y;
 			} else if (empty($carts)) {
 				$part2 = 'All carts destroyed.';
 			}
