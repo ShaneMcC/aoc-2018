@@ -6,28 +6,53 @@
 	$recipes = [3, 7];
 	$elf1 = 0;
 	$elf2 = 1;
+	$offset = 0;
+	$last = [];
 
 	function addRecipe() {
-		global $recipes, $elf1, $elf2;
+		global $recipes, $elf1, $elf2, $last, $input, $offset;
 
 		$new = $recipes[$elf1] + $recipes[$elf2];
 
 		$res1 = floor($new / 10);
 		$res2 = $new % 10;
 
-		if ($res1 != 0) { $recipes[] = $res1; }
-		$recipes[] = $res2;
+		if ($res1 != 0) {
+			$recipes[] = $res1;
+			$last[] = $res1;
+			if (count($last) > strlen($input)) {
+				array_shift($last);
+				yield implode('', $last);
+			}
+		}
+		$recipes[] = $res2; $last[] = $res2;
 
 		$elf1 += 1 + $recipes[$elf1];
 		$elf1 %= count($recipes);
 
 		$elf2 += 1 + $recipes[$elf2];
 		$elf2 %= count($recipes);
+
+		if (count($last) > strlen($input)) {
+			array_shift($last);
+			yield implode('', $last);
+		}
 	}
 
 
-	for ($i = 0; $i < $input + 10; $i++) {
-		addRecipe();
-	}
+	$min = $input + 10;
+	$part2 = null;
+	for ($i = 0; ($i < $min || $part2 == null); $i++) {
+		foreach (addRecipe() as $lastStr) {
+			if ($part2 == null && $lastStr == $input) {
+				$part2 = count($recipes) - strlen($input);
+				echo 'Part 2: ', $part2, "\n";
+			}
+		}
 
-	echo 'Part 1: ', implode('', array_slice($recipes, $input, 10)), "\n";
+		if ($i == $min - 1) {
+			$part1 = implode('', array_slice($recipes, $input - $offset, 10));
+			echo 'Part 1: ', $part1, "\n";
+		}
+
+	}
