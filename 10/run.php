@@ -28,26 +28,29 @@
 		$points[] = ['x' => (int)$x, 'y' => (int)$y, 'vx' => (int)$vx, 'vy' => (int)$vy];
 	}
 
-	// Based on https://github.com/MageJohn/Advent-of-Code-2018/blob/master/Day%2010%3A%20The%20Stars%20Align/Day%2010%20Solutions.ipynb
+	// When will the furthest away points be close enough to each other to be
+	// possibly forming a letter?
 	function guessOptimalTime() {
 		global $points;
 
-		// Maximum velocity.
-		$dy = max(array_column($points, 'vy'));
+		$maxY = PHP_INT_MIN;
+		$minY = PHP_INT_MAX;
+	    $minVY = $maxVY = 0;
 
-		// Calculate minimum points that have the opposite min/max velocities.
-		$y1 = $y2 = PHP_INT_MAX;
+		// Find furthest points.
 		foreach ($points as $p) {
-			if ($p['vy'] == $dy) {
-				$y1 = min($y1, $p['y']);
+			if ($p['y'] < $minY) {
+				$minY = $p['y'];
+				$minVY = $p['vy'];
 			}
-			if ($p['vy'] == 0 - $dy) {
-				$y2 = min($y2, $p['y']);
+			if ($p['y'] > $maxY) {
+				$maxY = $p['y'];
+				$maxVY = $p['vy'];
 			}
 		}
 
-		// Guess a time.
-		$time = ($y2 - $y1)/(2 * $dy);
+		// Calculate when they will be close.
+		$time = floor(($maxY - $minY - 10) / ($minVY - $maxVY));
 
 		return $time;
 	}
@@ -121,17 +124,7 @@
 
 	$lastHeight = $lastWidth = PHP_INT_MAX;
 
-	$guess = guessOptimalTime();
-	foreach ([$guess, $guess - 1, $guess + 1] as $i) {
-		$word = getOutput($i, isTest() || isDebug());
-		if (str_replace('?', '', $word) != '') {
-			echo 'Part 1: ', $word, "\n";
-			echo 'Part 2: ', $i, "\n";
-			die();
-		}
-	}
-
-	for ($i = 0; true; $i++) {
+	for ($i = guessOptimalTime(); true; $i++) {
 		[$minX, $minY, $maxX, $maxY, $pointsAt] = getAt($i);
 		$width = $maxX - $minX;
 		$height = $maxY - $minY;
