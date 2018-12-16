@@ -5,34 +5,34 @@
 	 */
 	class VM {
 		/** Current location. */
-		private $location = -1;
+		protected $location = -1;
 
 		/** Known Instructions. */
-		private $instrs = array();
+		protected $instrs = array();
 
 		/** Internal Registers. */
-		private $registers = array();
+		protected $registers = array();
 
 		/** Data to execute. */
-		private $data = array();
+		protected $data = array();
 
 		/** Read ahead optimisations */
-		private $readAheads = array();
+		protected $readAheads = array();
 
 		/** Our exit code. */
-		private $exitCode = 0;
+		protected $exitCode = 0;
 
 		/** Output from the VM. */
-		private $output = '';
+		protected $output = '';
 
 		/** VM Misc Data. */
-		private $miscData = [];
+		protected $miscData = [];
 
 		/** Is debug mode enabled? */
-		private $debug = false;
+		protected $debug = false;
 
 		/** Sleep time between debug output. */
-		private $sleep = 25000;
+		protected $sleep = 25000;
 
 		/**
 		 * Create a new VM.
@@ -228,7 +228,7 @@
 		/**
 		 * Iniit the Instructions.
 		 */
-		private function init() {
+		protected function init() {
 			/**
 			 * set
 			 *   - set X Y
