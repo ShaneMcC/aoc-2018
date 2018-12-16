@@ -1,10 +1,11 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break'];
+	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --id                 Include Elf IDs in debug output';
 	$__CLI['extrahelp'][] = '      --part1              run part 1';
 	$__CLI['extrahelp'][] = '      --part2              run part 2';
+	$__CLI['extrahelp'][] = '      --debugturn          debug each individual turn';
 	$__CLI['extrahelp'][] = '      --custom             run part 1 in custom mode';
 	$__CLI['extrahelp'][] = '      --eap <#>            Elf AP in custom mode';
 	$__CLI['extrahelp'][] = '      --ehp <#>            Elf HP in custom mode';
@@ -129,21 +130,31 @@
 		}
 
 		public function takeTurn() {
+			global $__CLIOPTS;
+			$debugTurn = isDebug() && isset($__CLIOPTS['debugturn']);
+
 			// If we're dead we can't do anything.
 			if (!$this->isAlive()) { return FALSE; }
 
+			if ($debugTurn) { echo "\t", 'Unit ', $this->id(), ' takes a turn.', "\n"; }
+
 			// If we have no targets, we can't do anything.
-			if (empty($this->getAllTargets())) { return FALSE; }
+			if (empty($this->getAllTargets())) {
+				if ($debugTurn) { echo "\t\t", 'Unit ', $this, ' sees no targets.', "\n"; }
+				return FALSE;
+			}
 
 			$adjacent = $this->getAdjacentTargets();
 
 			// If we're not next to a target, we can move.
 			if (empty($adjacent)) {
+				if ($debugTurn) { echo "\t\t", 'Unit ', $this, ' wants to move.', "\n"; }
+
 				// Find all other targets.
 				$targets = $this->getAllTargets();
 
 				// Get costs everywhere.
-				$costs = $this->getCosts(true);
+				$costs = $this->getCosts();
 
 				// Get paths to the targets.
 				$lowestCosts = [];
@@ -166,17 +177,44 @@
 
 				// If we have a possible path, move to it.
 				if (!empty($lowestCosts)) {
+					if ($debugTurn) {
+						$pathNumber = 1;
+						foreach ($lowestCosts as $p) {
+							[$c, $t] = $p;
+							echo "\t\t", 'Unit ', $this, ' has a ', $c['cost'], '-cost path towards ', $t, ' (Path: ', $pathNumber, ' of ', count($lowestCosts), ')', "\n";
+							$debugpath = [];
+							$marker = ($this->type() == 'G' ? "\033[1;31m" : "\033[0;32m") . '*' . "\033[0m";
+							foreach ($c['path'] as $p) { $debugpath[$p[1]][$p[0]] = ['cost' => $marker]; }
+							draw($debugpath, "\t\t\t");
+							echo "\n";
+						}
+					}
+
 					[$c, $t] = $lowestCosts[0];
 					$moveTo = $c['path'][0];
+
+					if ($debugTurn) {
+						echo "\t\t", 'Unit ', $this, ' is moving towards to ', implode(',', $moveTo), ' towards ', $t, "\n";
+						$debugpath = [];
+						$marker = ($this->type() == 'G' ? "\033[1;31m" : "\033[0;32m") . 'x' . "\033[0m";
+						foreach ($c['path'] as $p) { $debugpath[$moveTo[1]][$moveTo[0]] = ['cost' => $marker]; }
+						draw($debugpath, "\t\t\t");
+						echo "\n";
+					}
+
 					$this->setLoc($moveTo);
 
 					// Get new adjacent targets.
 					$adjacent = $this->getAdjacentTargets();
+				} else if ($debugTurn) {
+					echo "\t\t", 'Unit ', $this, ' has nowhere to move to.', "\n";
 				}
 			}
 
 
 			if (!empty($this->getAdjacentTargets())) {
+				if ($debugTurn) { echo "\t\t", 'Unit ', $this, ' wants to fight.', "\n"; }
+
 				// Find the adjacent target with the least HP.
 				$validTargets = [];
 				$lowestHP = PHP_INT_MAX;
@@ -192,14 +230,20 @@
 
 				// If we have a target, attack them.
 				if (isset($validTargets[0])) {
+					if ($debugTurn) { echo "\t\t", 'Unit ', $this, ' is fighting: ', $validTargets[0], "\n"; }
 					$this->attack($validTargets[0]);
+					if ($debugTurn) { echo "\t\t\t", 'Result: ', $validTargets[0], "\n"; }
 				}
 			}
+
+			if ($debugTurn) { echo "\n"; }
 
 			return TRUE;
 		}
 
 		public function __toString() {
+			global $__CLIOPTS;
+
 			$result = '';
 			$result .= $this->type() == 'G' ? "\033[1;31m" : "\033[0;32m";
 			$result .= $this->type();
@@ -208,6 +252,9 @@
 				$result .= '[' . $this->id() . ']';
 			}
 			$result .= '(' . $this->hp() . ')';
+			if (!$this->isAlive()) {
+				$result .= 'X';
+			}
 			return $result;
 		}
 
@@ -284,12 +331,12 @@
 		}
 	}
 
-	function draw($costs = []) {
+	function draw($costs = [], $prefix = '') {
 		global $grid, $characters;
 
 		for ($y = 0; $y < count($grid); $y++) {
 			$lineCharacters = [];
-
+			echo $prefix;
 			for ($x = 0; $x < count($grid[$y]); $x++) {
 				$unit = Unit::findAt($x, $y);
 
@@ -307,8 +354,6 @@
 
 			echo '    ', implode(' ', $lineCharacters), "\n";
 		}
-
-		echo "\n\n\n";
 	}
 
 	function isEmpty($x, $y) {
@@ -330,6 +375,11 @@
 
 
 	function doRound() {
+		global $__CLIOPTS;
+		$debugTurn = isDebug() && isset($__CLIOPTS['debugturn']);
+
+		if ($debugTurn) { echo 'Starting round.', "\n"; }
+
 		foreach (Unit::getUnits() as $unit) {
 			if ($unit->isAlive()) {
 				if (!$unit->takeTurn()) { return FALSE; }
