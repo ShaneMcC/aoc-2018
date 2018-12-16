@@ -1,7 +1,6 @@
 #!/usr/bin/php
 <?php
 	require_once(dirname(__FILE__) . '/../common/common.php');
-	require_once(dirname(__FILE__) . '/../common/pathfinder.php');
 	$input = getInputLines();
 
 	class Unit {
@@ -68,12 +67,14 @@
 			return self::notType($this->type);
 		}
 
-		public function getCosts($exitIfTarget = false) {
+		public function getCosts() {
 			global $grid;
 
 			$costs = [];
 
-			$state = [[$this->getLoc(), 0]];
+			$loc = $this->getLoc();
+			$state = [[$loc, 0]];
+			$costs[$loc[1]][$loc[0]] = ['cost' => 0, 'path' => []];
 
 			while (!empty($state)) {
 				list($cur, $cost) = array_shift($state);
@@ -81,7 +82,9 @@
 				foreach (getSurrounding($cur[0], $cur[1]) as $s) {
 					if (isEmpty($s[0], $s[1]) && !isset($costs[$s[1]][$s[0]])) {
 						$state[] = [$s, ($cost + 1)];
-						$costs[$s[1]][$s[0]] = ['cost' => ($cost + 1), 'previous' => $cur];
+						$old = $costs[$cur[1]][$cur[0]];
+						$costs[$s[1]][$s[0]] = ['cost' => ($cost + 1), 'path' => $old['path']];
+						$costs[$s[1]][$s[0]]['path'][] = $s;
 					}
 				}
 			}
@@ -150,9 +153,7 @@
 				// If we have a possible path, move to it.
 				if (!empty($lowestCosts)) {
 					[$c, $t] = $lowestCosts[0];
-					$m = (new Day15PathFinder($this, $t))->solveMaze($c);
-					$moveTo = $m[0]['previous'][1];
-
+					$moveTo = $c['path'][0];
 					$this->setLoc($moveTo);
 
 					// Get new adjacent targets.
@@ -238,16 +239,6 @@
 		public static function resetUnits() {
 			self::$units = [];
 			self::$unitID = 0;
-		}
-	}
-
-	class Day15PathFinder extends PathFinder {
-		public function __construct($source, $target) {
-			parent::__construct(null, $source->getLoc(), $target->getLoc());
-
-			$this->setHook('isValidLocation', function($state, $x, $y) { global $grid; return isset($grid[$y][$x]); });
-			$this->setHook('isAccessible', function($state, $x, $y) use ($target) { return [$x, $y] == $target->getLoc() || isEmpty($x, $y); });
-			$this->setHook('getPoints', function($state) { list($curX, $curY) = $state['current']; return getSurrounding($curX, $curY); });
 		}
 	}
 
