@@ -9,8 +9,8 @@
 	$__CLI['extrahelp'][] = '      --custom             run part 1 in custom mode';
 	$__CLI['extrahelp'][] = '      --eap <#>            Elf AP in custom mode';
 	$__CLI['extrahelp'][] = '      --ehp <#>            Elf HP in custom mode';
-	$__CLI['extrahelp'][] = '      --gap <#>            Gnome AP in custom mode';
-	$__CLI['extrahelp'][] = '      --ghp <#>            Gnome HP in custom mode';
+	$__CLI['extrahelp'][] = '      --gap <#>            Goblin AP in custom mode';
+	$__CLI['extrahelp'][] = '      --ghp <#>            Goblin HP in custom mode';
 	$__CLI['extrahelp'][] = '      --break              Exit if an elf dies in custom mode';
 
 	require_once(dirname(__FILE__) . '/../common/common.php');
@@ -443,15 +443,15 @@
 	}
 
 	if (isset($__CLIOPTS['custom'])) {
-		$gnomeAP = isset($__CLIOPTS['gap']) ? $__CLIOPTS['gap'] : 3;
-		$gnomeHit = isset($__CLIOPTS['ghp']) ? $__CLIOPTS['ghp'] : 3;
+		$goblinAP = isset($__CLIOPTS['gap']) ? $__CLIOPTS['gap'] : 3;
+		$goblinHit = isset($__CLIOPTS['ghp']) ? $__CLIOPTS['ghp'] : 3;
 		$elfAP = isset($__CLIOPTS['eap']) ? $__CLIOPTS['eap'] : 3;
 		$elfHit = isset($__CLIOPTS['ehp']) ? $__CLIOPTS['ehp'] : 3;
 		$exitOnElfDeath = isset($__CLIOPTS['break']);
 
 		echo 'Running with custom settings: ', "\n";
-		echo "\t", 'Gnome AP: ', $gnomeAP, "\n";
-		echo "\t", 'Gnome HP: ', $gnomeHit, "\n";
+		echo "\t", 'Goblin AP: ', $goblinAP, "\n";
+		echo "\t", 'Goblin HP: ', $goblinHit, "\n";
 		echo "\t", 'Elf AP: ', $elfAP, "\n";
 		echo "\t", 'Elf HP: ', $elfHit, "\n";
 		echo "\n\n";
@@ -459,8 +459,8 @@
 		resetGame();
 		foreach (Unit::getUnits() as $u) {
 			if ($u->type() == 'G') {
-				$u->hp($gnomeHit);
-				$u->ap($gnomeAP);
+				$u->hp($goblinHit);
+				$u->ap($goblinAP);
 			} else if ($u->type() == 'E') {
 				$u->hp($elfHit);
 				$u->ap($elfAP);
