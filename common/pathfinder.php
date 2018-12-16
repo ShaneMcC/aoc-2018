@@ -17,7 +17,7 @@
 		 * @param $end End location
 		 */
 		function __construct($grid, $start, $end) {
-			$this->initialState = ['grid' => $grid, 'current' => $start, 'target' => $end, 'steps' => 0, 'previous' => []];
+			$this->initialState = ['grid' => $grid, 'current' => $start, 'start' => $start, 'target' => $end, 'steps' => 0, 'previous' => []];
 
 			$this->hooks['isAccessible'] = function($state, $x, $y) {
 				return false;
@@ -33,6 +33,19 @@
 
 			$this->hooks['isFinished'] = function ($state) {
 				return ($state['current'] == $state['target']);
+			};
+
+			$this->hooks['getPoints'] = function ($state) {
+				list($curX, $curY) = $state['current'];
+
+				$points = [];
+				foreach ([$curX - 1, $curX, $curX + 1] as $x) {
+					foreach ([$curY - 1, $curY, $curY + 1] as $y) {
+						$points[] = [$x, $y];
+					}
+				}
+
+				return $points;
 			};
 		}
 
@@ -79,6 +92,9 @@
 		 *   'solveFinishedState' => Called when we are at a finished state.
 		 *                           Gets passed [$finalState, $vistedLocations]
 		 *
+		 *   'getPoints' => Called to find out what possible points to check
+		 *                  next from the given state. (Defaults to L/R/U/D)
+		 *
 		 * @param $hookPoint Name of hook point (from above list.)
 		 * @param $function Function to call for this hook.
 		 */
@@ -96,23 +112,22 @@
 			list($curX, $curY) = $state['current'];
 
 			$options = [];
-			foreach ([$curX - 1, $curX, $curX + 1] as $x) {
-				foreach ([$curY - 1, $curY, $curY + 1] as $y) {
-					if (!call_user_func($this->hooks['isValidLocation'], $state, $x, $y)) { continue; }
+			foreach (call_user_func($this->hooks['getPoints'], $state) as $point) {
+				list($x, $y) = $point;
 
-					$new = [$x, $y];
-					if (call_user_func($this->hooks['isAccessible'], $state, $x, $y) && !in_array($new, $state['previous'])) {
-						$newState = $state;
-						$newState['previous'][] = $newState['current'];
-						$newState['current'] = $new;
-						$newState['steps']++;
+				if (!call_user_func($this->hooks['isValidLocation'], $state, $x, $y)) { continue; }
 
-						if (isset($this->hooks['changeState'])) {
-							$newState = call_user_func($this->hooks['changeState'], $state, $newState);
-						}
+				if (call_user_func($this->hooks['isAccessible'], $state, $x, $y) && !in_array($point, $state['previous'])) {
+					$newState = $state;
+					$newState['previous'][] = $newState['current'];
+					$newState['current'] = $point;
+					$newState['steps']++;
 
-						$options[] = $newState;
+					if (isset($this->hooks['changeState'])) {
+						$newState = call_user_func($this->hooks['changeState'], $state, $newState);
 					}
+
+					$options[] = $newState;
 				}
 			}
 
@@ -140,7 +155,7 @@
 			while (count($states) > 0) {
 				$state = array_shift($states);
 
-				if ($maxSteps == -1 && call_user_func($this->hooks['isFinished'], $state)) {
+				if ($maxSteps == -1 || call_user_func($this->hooks['isFinished'], $state)) {
 					$finalState = $state;
 					if (isset($this->hooks['solveFinishedState'])) { call_user_func($this->hooks['solveFinishedState'], $state, $visted); }
 					break;
