@@ -1,5 +1,17 @@
 #!/usr/bin/php
 <?php
+	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break'];
+	$__CLI['extrahelp'] = [];
+	$__CLI['extrahelp'][] = '      --id                 Include Elf IDs in debug output';
+	$__CLI['extrahelp'][] = '      --part1              run part 1';
+	$__CLI['extrahelp'][] = '      --part2              run part 2';
+	$__CLI['extrahelp'][] = '      --custom             run part 1 in custom mode';
+	$__CLI['extrahelp'][] = '      --eap <#>            Elf AP in custom mode';
+	$__CLI['extrahelp'][] = '      --ehp <#>            Elf HP in custom mode';
+	$__CLI['extrahelp'][] = '      --gap <#>            Gnome AP in custom mode';
+	$__CLI['extrahelp'][] = '      --ghp <#>            Gnome HP in custom mode';
+	$__CLI['extrahelp'][] = '      --break              Exit if an elf dies in custom mode';
+
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
@@ -46,11 +58,13 @@
 			return $this->type;
 		}
 
-		public function hp() {
+		public function hp($val = null) {
+			if ($val != null) { $this->hp = $val; }
 			return max(0, $this->hp);
 		}
 
-		public function ap() {
+		public function ap($val = null) {
+			if ($val != null) { $this->ap = $val; }
 			return $this->ap;
 		}
 
@@ -190,7 +204,9 @@
 			$result .= $this->type() == 'G' ? "\033[1;31m" : "\033[0;32m";
 			$result .= $this->type();
 			$result .= "\033[0m";
-			// $result .= '[' . $this->id() . ']';
+			if (isset($__CLIOPTS['id'])) {
+				$result .= '[' . $this->id() . ']';
+			}
 			$result .= '(' . $this->hp() . ')';
 			return $result;
 		}
@@ -324,16 +340,19 @@
 	}
 
 
-	function doGame($elfAP = 3, $breakOnDeath = false) {
-		resetGame($elfAP);
+	function doGame($elfAP = 3, $breakOnDeath = false, $noReset = false) {
+		if (!$noReset) {
+			resetGame($elfAP);
+		}
 
 		if (isDebug()) {
 			echo 'Initial: ', "\n";
 			draw();
+			echo "\n\n\n";
 		}
 
 		$continue = true;
-		$rounds = 1;
+		$round = 1;
 		while ($continue) {
 			$continue = doRound();
 
@@ -348,13 +367,20 @@
 
 			if ($continue) {
 				if (isDebug()) {
-					echo "\n", 'After ', $rounds, ' Rounds with ', $elfAP, ' AP:', "\n";
+					echo "\n", 'After round ', $round;
+					if ($elfAP != null) { echo ' with ', $elfAP, ' AP'; }
+					echo ':', "\n";
 					draw();
+					echo "\n\n\n";
 				}
-				$rounds++;
+				$round++;
 			} else {
-				if (isDebug()) { echo "\n", 'Combat ended before ', $rounds, ' completed.', "\n"; }
-				$rounds--;
+				if (isDebug()) {
+					echo "\n", 'Combat ended before round ', $round, ' completed:', "\n";
+					draw();
+					echo "\n\n\n";
+				}
+				$round--;
 			}
 		}
 
@@ -363,23 +389,57 @@
 			$sum += $unit->hp();
 		}
 
-		return [$sum, $rounds];
+		return [$sum, $round];
 	}
 
-	$part1 = doGame(3, false);
+	if (isset($__CLIOPTS['custom'])) {
+		$gnomeAP = isset($__CLIOPTS['gap']) ? $__CLIOPTS['gap'] : 3;
+		$gnomeHit = isset($__CLIOPTS['ghp']) ? $__CLIOPTS['ghp'] : 3;
+		$elfAP = isset($__CLIOPTS['eap']) ? $__CLIOPTS['eap'] : 3;
+		$elfHit = isset($__CLIOPTS['ehp']) ? $__CLIOPTS['ehp'] : 3;
+		$exitOnElfDeath = isset($__CLIOPTS['break']);
 
-	echo 'Part 1: ', ($part1[0] * $part1[1]), ' (', $part1[0], ' x ', $part1[1], ')', "\n";
+		echo 'Running with custom settings: ', "\n";
+		echo "\t", 'Gnome AP: ', $gnomeAP, "\n";
+		echo "\t", 'Gnome HP: ', $gnomeHit, "\n";
+		echo "\t", 'Elf AP: ', $elfAP, "\n";
+		echo "\t", 'Elf HP: ', $elfHit, "\n";
+		echo "\n\n";
 
-	$ap = 4;
-	while (true) {
-		$part2 = doGame($ap, true);
-		if ($part2 === FALSE) {
-			$ap++;
-		} else {
-			break;
+		resetGame();
+		foreach (Unit::getUnits() as $u) {
+			if ($u->type() == 'G') {
+				$u->hp($gnomeHit);
+				$u->ap($gnomeAP);
+			} else if ($u->type() == 'E') {
+				$u->hp($elfHit);
+				$u->ap($elfAP);
+			}
+		}
+		doGame(null, $exitOnElfDeath, true);
+		die();
+	}
+
+	$runPart1 = isset($__CLIOPTS['part1']) || (!isset($__CLIOPTS['part1']) && !isset($__CLIOPTS['part2']));
+	$runPart2 = isset($__CLIOPTS['part2']) || (!isset($__CLIOPTS['part1']) && !isset($__CLIOPTS['part2']));
+
+	if ($runPart1) {
+		$part1 = doGame(3, false);
+		echo 'Part 1: ', ($part1[0] * $part1[1]), ' (', $part1[0], ' x ', $part1[1], ')', "\n";
+	}
+
+	if ($runPart2) {
+		$ap = 4;
+		while (true) {
+			$part2 = doGame($ap, true);
+			if ($part2 === FALSE) {
+				$ap++;
+			} else {
+				break;
+			}
 		}
 	}
 
 	// Show this again because the output will have hidden it.
-	if (isDebug()) { echo 'Part 1: ', ($part1[0] * $part1[1]), ' (', $part1[0], ' x ', $part1[1], ')', "\n"; }
-	echo 'Part 2: ', ($part2[0] * $part2[1]), ' (', $part2[0], ' x ', $part2[1], ' with ' , $ap, ' AP)', "\n";
+	if (isDebug() && $runPart1 && $runPart2) { echo 'Part 1: ', ($part1[0] * $part1[1]), ' (', $part1[0], ' x ', $part1[1], ')', "\n"; }
+	if ($runPart2) { echo 'Part 2: ', ($part2[0] * $part2[1]), ' (', $part2[0], ' x ', $part2[1], ' with ' , $ap, ' AP)', "\n"; }
