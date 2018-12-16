@@ -68,6 +68,27 @@
 			return self::notType($this->type);
 		}
 
+		public function getCosts($exitIfTarget = false) {
+			global $grid;
+
+			$costs = [];
+
+			$state = [[$this->getLoc(), 0]];
+
+			while (!empty($state)) {
+				list($cur, $cost) = array_shift($state);
+
+				foreach (getSurrounding($cur[0], $cur[1]) as $s) {
+					if (isEmpty($s[0], $s[1]) && !isset($costs[$s[1]][$s[0]])) {
+						$state[] = [$s, ($cost + 1)];
+						$costs[$s[1]][$s[0]] = ['cost' => ($cost + 1), 'previous' => $cur];
+					}
+				}
+			}
+
+			return $costs;
+		}
+
 		public function getAdjacentTargets() {
 			$targets = [];
 			foreach (getSurrounding($this->x, $this->y) as $loc) {
@@ -90,37 +111,12 @@
 			return $spaces;
 		}
 
-		public function getPaths($target, $maxDistance = PHP_INT_MAX) {
-			global $grid;
-
-			$paths = [];
-			$shortest = $maxDistance;
-
-			$m = (new Day15PathFinder($this, $target))->solveMaze($shortest);
-
-			if ($m[0] !== FALSE) {
-				if ($m[0]['steps'] < $shortest) {
-					$shortest = $m[0]['steps'];
-					$paths = [];
-				}
-
-				if ($m[0]['steps'] == $shortest) {
-					$paths[] = $m[0]['previous'][1];
-				}
-			}
-
-			return [$shortest, $paths];
-		}
-
-
 		public function takeTurn() {
 			// If we're dead we can't do anything.
 			if (!$this->isAlive()) { return FALSE; }
 
 			// If we have no targets, we can't do anything.
 			if (empty($this->getAllTargets())) { return FALSE; }
-
-			// echo 'Unit: ', $this, "\n";
 
 			$adjacent = $this->getAdjacentTargets();
 
@@ -129,30 +125,35 @@
 				// Find all other targets.
 				$targets = $this->getAllTargets();
 
+				// Get costs everywhere.
+				$costs = $this->getCosts(true);
+
 				// Get paths to the targets.
-				$shortest = PHP_INT_MAX;
-				$possiblePaths = [];
+				$lowestCosts = [];
+				$lowestCost = PHP_INT_MAX;
 				foreach ($targets as $target) {
-					list($distance, $paths) = $this->getPaths($target, $shortest);
+					foreach ($target->getAdjacentSpaces() as $s) {
+						// Is the space reachable?
+						if (!isset($costs[$s[1]][$s[0]])) { continue; }
 
-					// If we found a valid path, then consider it.
-					if (!empty($paths)) {
-						if ($distance < $shortest) {
-							$possiblePaths = [];
-							$shortest = $distance;
+						$cost = $costs[$s[1]][$s[0]];
+						if ($cost['cost'] < $lowestCost) {
+							$lowestCost = $cost['cost'];
+							$lowestCosts = [];
 						}
-
-						if ($distance == $shortest) {
-							foreach ($paths as $path) {
-								$possiblePaths[] = $path;
-							}
+						if ($cost['cost'] == $lowestCost) {
+							$lowestCosts[] = [$cost, $target];
 						}
 					}
 				}
 
 				// If we have a possible path, move to it.
-				if (!empty($possiblePaths)) {
-					$this->setLoc($possiblePaths[0]);
+				if (!empty($lowestCosts)) {
+					[$c, $t] = $lowestCosts[0];
+					$m = (new Day15PathFinder($this, $t))->solveMaze($c);
+					$moveTo = $m[0]['previous'][1];
+
+					$this->setLoc($moveTo);
 
 					// Get new adjacent targets.
 					$adjacent = $this->getAdjacentTargets();
@@ -244,7 +245,6 @@
 		}
 	}
 
-
 	function resetGame($elfAP = 3) {
 		global $input, $grid, $maxX;
 
@@ -271,7 +271,7 @@
 		}
 	}
 
-	function draw() {
+	function draw($costs = []) {
 		global $grid, $characters;
 
 		for ($y = 0; $y < count($grid); $y++) {
@@ -284,7 +284,7 @@
 					echo $unit->type();
 					$lineCharacters[] = $unit;
 				} else {
-					echo $grid[$y][$x];
+					echo isset($costs[$y][$x]) ? $costs[$y][$x]['cost'] : $grid[$y][$x];
 				}
 			}
 
