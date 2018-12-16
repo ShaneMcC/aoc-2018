@@ -185,7 +185,13 @@
 		}
 
 		public function __toString() {
-			return $this->type() . '[' . $this->id() . '](' . $this->hp() . ')';
+			$result = '';
+			$result .= $this->type() == 'G' ? "\033[1;31m" : "\033[0;32m";
+			$result .= $this->type();
+			$result .= "\033[0m";
+			// $result .= '[' . $this->id() . ']';
+			$result .= '(' . $this->hp() . ')';
+			return $result;
 		}
 
 		public static function sort($a, $b) {
@@ -281,10 +287,14 @@
 				$unit = Unit::findAt($x, $y);
 
 				if ($unit !== NULL) {
+					echo $unit->type() == 'G' ? "\033[1;31m" : "\033[0;32m";
 					echo $unit->type();
+					echo "\033[0m";
 					$lineCharacters[] = $unit;
 				} else {
-					echo isset($costs[$y][$x]) ? $costs[$y][$x]['cost'] : $grid[$y][$x];
+					$bit = $grid[$y][$x];
+					$bit = $bit == '#' ? '█' : ' ';
+					echo isset($costs[$y][$x]) ? $costs[$y][$x]['cost'] : $bit ;
 				}
 			}
 
@@ -367,6 +377,8 @@
 
 	$part1 = doGame(3, false);
 
+	echo 'Part 1: ', ($part1[0] * $part1[1]), ' (', $part1[0], ' x ', $part1[1], ')', "\n";
+
 	$ap = 4;
 	while (true) {
 		$part2 = doGame($ap, true);
@@ -377,5 +389,6 @@
 		}
 	}
 
-	echo 'Part 1: ', $part1[0], ' x ', $part1[1], ' = ', ($part1[0] * $part1[1]), "\n";
-	echo 'Part 2: ', $ap, ' (', $part2[0], ' x ', $part2[1], ' = ', ($part2[0] * $part2[1]), ')', "\n";
+	// Show this again because the output will have hidden it.
+	if (isDebug()) { echo 'Part 1: ', ($part1[0] * $part1[1]), ' (', $part1[0], ' x ', $part1[1], ')', "\n"; }
+	echo 'Part 2: ', ($part2[0] * $part2[1]), ' (', $part2[0], ' x ', $part2[1], ' with ' , $ap, ' AP)', "\n";
