@@ -177,11 +177,38 @@
 
 				// If we have a possible path, move to it.
 				if (!empty($lowestCosts)) {
+					// Sort the costs.
+					usort($lowestCosts, function ($a, $b) {
+						global $maxX;
+
+						// Firstly, sort based on the reading-order of the LAST
+						// point in the path.
+						list($aeX, $aeY) = $a[0]['path'][count($a[0]['path']) - 1];
+						list($beX, $beY) = $b[0]['path'][count($b[0]['path']) - 1];
+
+						$aeSort = ($aeY * $maxX) + $aeX;
+						$beSort = ($beY * $maxX) + $beX;
+
+						// If the last points are identical, then we sort by
+						// the FIRST point instead.
+						if ($aeSort == $beSort) {
+							list($asX, $asY) = $a[0]['path'][0];
+							list($bsX, $bsY) = $b[0]['path'][0];
+
+							$asSort = ($asY * $maxX) + $asX;
+							$bsSort = ($bsY * $maxX) + $bsX;
+
+							return ($asSort < $bsSort) ? -1 : (($asSort == $bsSort) ? 0 : 1);
+						} else {
+							return ($aeSort < $beSort) ? -1 : 1;
+						}
+					});
+
 					if ($debugTurn) {
 						$pathNumber = 1;
 						foreach ($lowestCosts as $p) {
 							[$c, $t] = $p;
-							echo "\t\t", 'Unit ', $this, ' has a ', $c['cost'], '-cost path towards ', $t, ' (Path: ', $pathNumber, ' of ', count($lowestCosts), ')', "\n";
+							echo "\t\t", 'Unit ', $this, ' has a ', $c['cost'], '-cost path towards ', $t, ' (Path: ', $pathNumber++, ' of ', count($lowestCosts), ')', "\n";
 							$debugpath = [];
 							$marker = ($this->type() == 'G' ? "\033[1;31m" : "\033[0;32m") . '*' . "\033[0m";
 							foreach ($c['path'] as $p) { $debugpath[$p[1]][$p[0]] = ['cost' => $marker]; }
