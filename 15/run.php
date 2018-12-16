@@ -13,7 +13,7 @@
 		private $x = 0;
 		private $y = 0;
 
-		private static $units;
+		private static $units = [];
 		private static $unitID = 0;
 
 		public function __construct($type, $ap = 3, $hp = 200) {
@@ -96,20 +96,16 @@
 			$paths = [];
 			$shortest = $maxDistance;
 
-			foreach ($target->getAdjacentSpaces() as $t) {
-				foreach ($this->getAdjacentSpaces() as $s) {
-					$m = (new Day15PathFinder($grid, $s, $t))->solveMaze($shortest);
+			$m = (new Day15PathFinder($this, $target))->solveMaze($shortest);
 
-					if ($m[0] !== FALSE) {
-						if ($m[0]['steps'] < $shortest) {
-							$shortest = $m[0]['steps'];
-							$paths = [];
-						}
+			if ($m[0] !== FALSE) {
+				if ($m[0]['steps'] < $shortest) {
+					$shortest = $m[0]['steps'];
+					$paths = [];
+				}
 
-						if ($m[0]['steps'] == $shortest) {
-							$paths[] = $s;
-						}
-					}
+				if ($m[0]['steps'] == $shortest) {
+					$paths[] = $m[0]['previous'][1];
 				}
 			}
 
@@ -205,10 +201,21 @@
 			return NULL;
 		}
 
-		public static function notType($type) {
+		public static function get($id) {
+			foreach (self::$units as $u) {
+				if ($u->id() == $id) {
+					return $u;
+				}
+			}
+
+			return NULL;
+		}
+
+
+		public static function notType($type, $includeDead = false) {
 			$result = [];
 			foreach (self::$units as $u) {
-				if ($u->isAlive() && $u->type() != $type) {
+				if (($includeDead || $u->isAlive()) && $u->type() != $type) {
 					$result[] = $u;
 				}
 			}
@@ -220,37 +227,48 @@
 
 			return self::$units;
 		}
+
+		public static function resetUnits() {
+			self::$units = [];
+			self::$unitID = 0;
+		}
 	}
 
 	class Day15PathFinder extends PathFinder {
-		public function __construct($grid, $start, $end) {
-			parent::__construct($grid, $start, $end);
-			$this->setHook('isAccessible', function($state, $x, $y) { return isEmpty($x, $y); });
+		public function __construct($source, $target) {
+			parent::__construct(null, $source->getLoc(), $target->getLoc());
+
+			$this->setHook('isValidLocation', function($state, $x, $y) { global $grid; return isset($grid[$y][$x]); });
+			$this->setHook('isAccessible', function($state, $x, $y) use ($target) { return [$x, $y] == $target->getLoc() || isEmpty($x, $y); });
 			$this->setHook('getPoints', function($state) { list($curX, $curY) = $state['current']; return getSurrounding($curX, $curY); });
 		}
 	}
 
 
+	function resetGame($elfAP = 3) {
+		global $input, $grid, $maxX;
 
+		Unit::resetUnits();
 
-	$grid = [];
-	$maxX = $x = $y = 0;
-	foreach ($input as $in) {
-		$line = [];
-		$x = 0;
-		foreach (str_split($in) as $bit) {
-			$c = [];
-			if ($bit == 'E' || $bit == 'G' ) {
-				(new Unit($bit))->setLoc([$x, $y]);
-				$bit = '.';
+		$grid = [];
+		$maxX = $x = $y = 0;
+		foreach ($input as $in) {
+			$line = [];
+			$x = 0;
+			foreach (str_split($in) as $bit) {
+				$c = [];
+				if ($bit == 'E' || $bit == 'G' ) {
+					(new Unit($bit, ($bit == 'E' ? $elfAP : 3)))->setLoc([$x, $y]);
+					$bit = '.';
+				}
+
+				$line[] = $bit;
+				$x++;
+				$maxX = max($maxX, $x);
 			}
-
-			$line[] = $bit;
-			$x++;
-			$maxX = max($maxX, $x);
+			$grid[] = $line;
+			$y++;
 		}
-		$grid[] = $line;
-		$y++;
 	}
 
 	function draw() {
@@ -305,27 +323,59 @@
 	}
 
 
-	echo 'Initial: ', "\n";
-	draw();
+	function doGame($elfAP = 3, $breakOnDeath = false) {
+		resetGame($elfAP);
 
-	$continue = true;
-	$rounds = 1;
-	while ($continue) {
-		$continue = doRound();
-		if ($continue) {
-			echo "\n", 'After ', $rounds, ' Rounds:', "\n";
+		if (isDebug()) {
+			echo 'Initial: ', "\n";
 			draw();
-			$rounds++;
+		}
+
+		$continue = true;
+		$rounds = 1;
+		while ($continue) {
+			$continue = doRound();
+
+			if ($breakOnDeath) {
+				foreach (Unit::notType('G', true) as $unit) {
+					if (!$unit->isAlive()) {
+						if (isDebug()) { echo "\n", 'An elf died.', "\n"; }
+						return FALSE;
+					}
+				}
+			}
+
+			if ($continue) {
+				if (isDebug()) {
+					echo "\n", 'After ', $rounds, ' Rounds with ', $elfAP, ' AP:', "\n";
+					draw();
+				}
+				$rounds++;
+			} else {
+				if (isDebug()) { echo "\n", 'Combat ended before ', $rounds, ' completed.', "\n"; }
+				$rounds--;
+			}
+		}
+
+		$sum = 0;
+		foreach (Unit::getUnits() as $unit) {
+			$sum += $unit->hp();
+		}
+
+		return [$sum, $rounds];
+	}
+
+	$part1 = doGame(3, false);
+
+	$ap = 4;
+	while (true) {
+		$part2 = doGame($ap, true);
+		if ($part2 === FALSE) {
+			$ap++;
 		} else {
-			echo "\n", 'Combat ended before ', $rounds, ' completed.', "\n";
-			$rounds--;
+			break;
 		}
 	}
 
-
-	$sum = 0;
-	foreach (Unit::getUnits() as $unit) {
-		$sum += $unit->hp();
-	}
-
-	echo 'Part 1: ', ($sum * ($rounds)), "\n";
+	echo 'Part 1: ', $part1[0], ' x ', $part1[1], ' = ', ($part1[0] * $part1[1]), "\n";
+	echo 'Part 2: ', $ap, ' (', $part2[0], ' x ', $part2[1], ' = ', ($part2[0] * $part2[1]), ')', "\n";
