@@ -8,14 +8,14 @@
 
 	class VM {
 		private $instructions = [];
-		private $reg;
+		private $reg = [0, 0, 0, 0];
+		private $map = [];
 
 		public function __construct() {
 			$this->init();
 		}
 
 		private function init() {
-			$this->reg = [0, 0, 0, 0];
 			$this->instructions['addr'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a] + $vm->reg[$b]; };
 			$this->instructions['addi'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a] + $b; };
 
@@ -52,7 +52,13 @@
 			return $this->reg;
 		}
 
+		public function setMap($map) {
+			$this->map = $map;
+		}
+
 		public function run($instr, $args) {
+			$instr = isset($this->map[$instr]) ? $this->map[$instr] : $instr;
+
 			if (isset($this->instructions[$instr])) {
 				array_unshift($args, $this);
 				call_user_func_array($this->instructions[$instr], $args);
@@ -65,7 +71,7 @@
 	foreach ($input as $details) {
 		if (preg_match('#Before: \[([0-9]+), ([0-9]+), ([0-9]+), ([0-9]+)\]#SADi', $details, $m)) {
 			list($all, $a, $b, $c, $d) = $m;
-			$sample = ['before' => [$a, $b, $c, $d], 'after' => [], 'input' => [], 'instrs' => []];
+			$sample = ['before' => [$a, $b, $c, $d], 'after' => [], 'input' => [], 'behaves' => []];
 		} else if (preg_match('#After:  \[([0-9]+), ([0-9]+), ([0-9]+), ([0-9]+)\]#SADi', $details, $m)) {
 			list($all, $a, $b, $c, $d) = $m;
 			$sample['after'] = [$a, $b, $c, $d];
@@ -78,22 +84,18 @@
 			if ($sample == NULL) {
 				$test[] = [$a, $b, $c, $d];
 			} else {
-				$sample['input'] = [$a, $b, $c, $d];
+				$sample['instr'] = $a;
+				$sample['args'] = [$b, $c, $d];
 			}
 		}
 	}
-
 
 	$vm = new VM();
 
 	foreach ($samples as $s => $sample) {
 		foreach ($vm->getInstructions() as $instr) {
 			$vm->setReg($sample['before']);
-
-			$args = $sample['input'];
-			array_shift($args);
-
-			$vm->run($instr, $args);
+			$vm->run($instr, $sample['args']);
 
 			$match = ($vm->getReg() == $sample['after']);
 
@@ -102,16 +104,47 @@
 			}
 
 			if ($match) {
-				$samples[$s]['instrs'][] = $instr;
+				$samples[$s]['behaves'][$instr] = true;
 			}
 		}
 	}
 
 	$part1 = 0;
 	foreach ($samples as $sample) {
-		if (count($sample['instrs']) >= 3) {
+		if (count($sample['behaves']) >= 3) {
 			$part1++;
 		}
 	}
 
 	echo 'Part 1: ', $part1, "\n";
+
+
+	$map = [];
+	while (count($map) < 16) {
+		foreach (array_keys($samples) as $s) {
+			// Check if this sample only behaves like a single possible
+			// instruction
+			if (count($samples[$s]['behaves']) == 1) {
+				$num = $samples[$s]['instr'];
+				$name = array_keys($samples[$s]['behaves'])[0];
+				if (isDebug()) { echo $num, ' only behaves like ', $name, "\n"; }
+
+				// Add to the map
+				$map[$num] = $name;
+
+				// Remove from all other samples.
+				foreach (array_keys($samples) as $s2) {
+					unset($samples[$s2]['behaves'][$name]);
+				}
+			}
+		}
+	}
+
+	$vm = new VM();
+	$vm->setMap($map);
+	foreach ($test as $args) {
+		$instr = array_shift($args);
+		$vm->run($instr, $args);
+	}
+
+	echo 'Part 2: ', $vm->getReg()[0], "\n";
