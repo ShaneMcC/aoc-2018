@@ -31,6 +31,7 @@
 
 		private static $units = [];
 		private static $unitID = 0;
+		private static $locations = [];
 
 		public function __construct($type, $ap = 3, $hp = 200) {
 			$this->type = $type;
@@ -80,6 +81,16 @@
 		public function setLoc($loc) {
 			$this->x = $loc[0];
 			$this->y = $loc[1];
+			self::updateLocations();
+		}
+
+		public static function updateLocations() {
+			self::$locations = [];
+			foreach (self::$units as $u) {
+				if ($u->isAlive()) {
+					self::$locations[$u->getSortID()] = $u;
+				}
+			}
 		}
 
 		public function getAllTargets() {
@@ -310,13 +321,10 @@
 		}
 
 		public static function findAt($x, $y) {
-			foreach (self::$units as $u) {
-				if ($u->isAlive() && $u->getLoc() == [$x, $y]) {
-					return $u;
-				}
-			}
+			global $maxX;
+			$id = ($y * $maxX) + $x;
 
-			return NULL;
+			return (isset(self::$locations[$id]) && self::$locations[$id]->isAlive()) ? self::$locations[$id] : NULL;
 		}
 
 		public static function get($id) {
