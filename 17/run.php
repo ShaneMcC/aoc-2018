@@ -1,8 +1,9 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['plain'];
+	$__CLI['long'] = ['plain', 'nocolour'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --plain              Don\'t include ansi in debug output';
+	$__CLI['extrahelp'][] = '      --nocolour           Don\'t include colour debug output';
 
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
@@ -47,15 +48,37 @@
 						echo $bit;
 					} else {
 						if ($bit == '#') {
-							echo '█';
+							if (get($x + 1, $y) != '#' && get($x - 1, $y) == '#' && get($x, $y + 1) == '#' && get($x, $y - 1) != '#') {
+								// Top Right Corner.
+								echo '┐';
+							} else if (get($x + 1, $y) == '#' && get($x - 1, $y) != '#' && get($x, $y + 1) == '#' && get($x, $y - 1) != '#') {
+								// Top Left Corner
+								echo '┌';
+							} else if (get($x + 1, $y) != '#' && get($x - 1, $y) == '#' && get($x, $y + 1) != '#' && get($x, $y - 1) == '#') {
+								// Bottom Right Corner.
+								echo '┘';
+							} else if (get($x + 1, $y) == '#' && get($x - 1, $y) != '#' && get($x, $y + 1) != '#' && get($x, $y - 1) == '#') {
+								// Bottom Left Corner
+								echo '└';
+							} else if (get($x, $y + 1) != '#' && get($x, $y - 1) != '#') {
+								// Top/Bottom Edge
+								echo '─';
+							} else if (get($x + 1, $y) != '#' && get($x - 1, $y) != '#') {
+								// Left/Right Edge
+								echo '│';
+							} else {
+								// Unknown.
+								echo '@';
+							}
+
 						} else if ($bit == '.') {
-							echo '░';
+							echo ' ';
 						} else {
-							echo "\033[1;34m";
+							if (!isset($__CLIOPTS['nocolour'])) { echo "\033[1;34m"; }
 							if ($bit == '|') { echo '░'; }
 							if ($bit == '~') { echo '█'; }
 							if ($bit == '+') { echo '▄'; }
-							echo "\033[0m";
+							if (!isset($__CLIOPTS['nocolour'])) { echo "\033[0m"; }
 						}
 					}
 				}
