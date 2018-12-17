@@ -1,7 +1,7 @@
 <?php
 
-	function draw($areaSize = null) {
-		global $grid, $__CLIOPTS, $coords;
+	function draw($grid = [], $areaSize = null) {
+		global $__CLIOPTS, $coords;
 
 		$colours = [];
 		$canColour = (function_exists('posix_isatty') && posix_isatty(STDOUT)) || getenv('ANSICON') !== FALSE;

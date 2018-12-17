@@ -77,6 +77,8 @@
 			// We only care about the area sizes for areas within the normal
 			// boundary.
 			if ($x >= $minX && $x <= $maxX && $y >= $minY && $y <= $maxY) {
+				$edge = in_array($x, [$minX, $maxX]) || in_array($y, [$minY, $maxY]);
+
 				$grid[$y][$x] = $id;
 				if ($id !== '') {
 					if ($edge) {
@@ -95,7 +97,7 @@
 	list($areaSize, $grid, $safeSize) = getAreas();
 
 	if (isDebug()) {
-		draw($areaSize);
+		draw($grid, $areaSize);
 	}
 
 	echo 'Part 1: ', max($areaSize), "\n";
