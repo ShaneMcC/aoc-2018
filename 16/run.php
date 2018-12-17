@@ -127,6 +127,8 @@
 			if (count($samples[$s]['behaves']) == 1) {
 				$num = $samples[$s]['instr'];
 				$name = array_keys($samples[$s]['behaves'])[0];
+				if (isset($map[$num])) { continue; }
+
 				if (isDebug()) { echo $num, ' only behaves like ', $name, "\n"; }
 
 				// Add to the map
