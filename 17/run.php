@@ -1,9 +1,12 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['plain', 'nocolour'];
+	$__CLI['long'] = ['plain', 'nocolour', 'full', 'noclear', 'sleep:'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --plain              Don\'t include ansi in debug output';
 	$__CLI['extrahelp'][] = '      --nocolour           Don\'t include colour debug output';
+	$__CLI['extrahelp'][] = '      --full               Draw all steps';
+	$__CLI['extrahelp'][] = '      --sleep <#>          Time between steps in full mode.';
+	$__CLI['extrahelp'][] = '      --noclear            Don\'t clear screen in full mode';
 
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
@@ -36,11 +39,25 @@
 		global $minY, $minX, $maxY, $maxX, $grid, $__CLIOPTS;
 
 		// 0 not minY so that we can include the water source.
-		for ($y = 0; $y <= $maxY; $y++) {
+		$drawMinY = 0;
+		$drawMaxY = $maxY;
+
+		if ($hX != null && $hY != null) {
+			if (!isset($__CLIOPTS['noclear'])) {
+				echo "\033[2J";
+				echo "\033[;H";
+			}
+			$viewport = 40;
+
+			$drawMinY = ($hY - floor($viewport/2));
+			$drawMaxY = ($hY + floor($viewport/2));
+		}
+
+		for ($y = $drawMinY; $y <= $drawMaxY; $y++) {
 			for ($x = $minX - 1; $x <= $maxX + 1; $x++) {
 
 				if ($hX == $x && $hY == $y) {
-					echo '?';
+					echo 'X';
 				} else {
 					$bit = get($x, $y);
 
@@ -86,7 +103,14 @@
 			echo "\n";
 		}
 		echo "\n";
-		usleep(100000);
+
+		if ($hX != null && $hY != null) {
+			for ($x = $minX - 1; $x <= $maxX + 1; $x++) {
+				echo '┄';
+			}
+			echo "\n";
+		}
+		usleep(isset($__CLIOPTS['sleep']) ? $__CLIOPTS['sleep'] : 50000);
 	}
 
 	function get($x, $y) {
@@ -107,7 +131,7 @@
 	}
 
 	function pour($x, $y) {
-		global $maxY;
+		global $maxY, $__CLIOPTS;
 
 		// Are we a water source?
 		// Start pouring below us instead.
@@ -118,6 +142,8 @@
 
 		// If we are not a valid location to pour from, do nothing.
 		if (!canPour($x, $y)) { return; }
+
+		if (isset($__CLIOPTS['full'])) { draw($x, $y); }
 
 		// If the space below us isn't pourable, we need to try and overflow.
 		if (!canPour($x, $y + 1)) {
