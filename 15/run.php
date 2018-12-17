@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot'];
+	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot', 'peaceful'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --nocolour           Don\'t include colours in output';
 	$__CLI['extrahelp'][] = '      --hashdot            Use # and . in cave output';
@@ -15,6 +15,7 @@
 	$__CLI['extrahelp'][] = '      --gap <#>            Goblin AP in custom mode';
 	$__CLI['extrahelp'][] = '      --ghp <#>            Goblin HP in custom mode';
 	$__CLI['extrahelp'][] = '      --break              Exit if an elf dies in custom mode';
+	$__CLI['extrahelp'][] = '      --peaceful           Don\'t engage in combat';
 
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
@@ -244,7 +245,7 @@
 			}
 
 
-			if (!empty($this->getAdjacentTargets())) {
+			if (!isset($__CLIOPTS['peaceful']) && !empty($this->getAdjacentTargets())) {
 				if ($debugTurn) { echo "\t\t", 'Unit ', $this, ' wants to fight.', "\n"; }
 
 				// Find the adjacent target with the least HP.
@@ -428,10 +429,21 @@
 
 		if ($debugTurn) { echo 'Starting round.', "\n"; }
 
+		$peaceful = isset($__CLIOPTS['peaceful']);
+		$movement = false;
+
 		foreach (Unit::getUnits() as $unit) {
 			if ($unit->isAlive()) {
+				if ($peaceful) { $lastLoc = $unit->getLoc(); }
 				if (!$unit->takeTurn()) { return FALSE; }
+				if ($peaceful) { if ($lastLoc != $unit->getLoc()) { $movement = true; } }
 			}
+		}
+
+		// We stalled.
+		if ($peaceful && !$movement) {
+			if ($debugTurn) { echo "\t", 'Nothing useful happened this round.', "\n"; }
+			return FALSE;
 		}
 
 		return TRUE;
@@ -439,6 +451,8 @@
 
 
 	function doGame($elfAP = null, $breakOnDeath = false, $noReset = false) {
+		global $__CLIOPTS;
+
 		if (!$noReset) {
 			resetGame($elfAP);
 		}
@@ -474,9 +488,14 @@
 				$round++;
 			} else {
 				if (isDebug()) {
-					echo "\n", 'Combat ended before round ', $round, ' completed:', "\n";
-					draw();
-					echo "\n\n\n";
+					$peaceful = isset($__CLIOPTS['peaceful']);
+					if ($peaceful) {
+						echo "\n", 'No more moves are possible.', "\n\n\n";
+					} else {
+						echo "\n", 'Combat ended before round ', $round, ' completed:', "\n";
+						draw();
+						echo "\n\n\n";
+					}
 				}
 				$round--;
 			}
