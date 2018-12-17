@@ -1,5 +1,9 @@
 #!/usr/bin/php
 <?php
+	$__CLI['long'] = ['plain'];
+	$__CLI['extrahelp'] = [];
+	$__CLI['extrahelp'][] = '      --plain              Don\'t include ansi in debug output';
+
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
 
@@ -28,7 +32,7 @@
 
 
 	function draw($hX = null, $hY = null) {
-		global $minY, $minX, $maxY, $maxX, $grid;
+		global $minY, $minX, $maxY, $maxX, $grid, $__CLIOPTS;
 
 		// 0 not minY so that we can include the water source.
 		for ($y = 0; $y <= $maxY; $y++) {
@@ -37,7 +41,23 @@
 				if ($hX == $x && $hY == $y) {
 					echo '?';
 				} else {
-					echo get($x, $y);
+					$bit = get($x, $y);
+
+					if (isset($__CLIOPTS['plain'])) {
+						echo $bit;
+					} else {
+						if ($bit == '#') {
+							echo '█';
+						} else if ($bit == '.') {
+							echo '░';
+						} else {
+							echo "\033[1;34m";
+							if ($bit == '|') { echo '░'; }
+							if ($bit == '~') { echo '█'; }
+							if ($bit == '+') { echo '▄'; }
+							echo "\033[0m";
+						}
+					}
 				}
 			}
 			echo "\n";
