@@ -95,9 +95,7 @@
 	list($areaSize, $grid, $safeSize) = getAreas();
 
 	if (isDebug()) {
-		draw();
-		asort($areaSize);
-		print_r($areaSize);
+		draw($areaSize);
 	}
 
 	echo 'Part 1: ', max($areaSize), "\n";
