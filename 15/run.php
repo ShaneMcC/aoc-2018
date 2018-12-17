@@ -492,9 +492,9 @@
 
 	if (isset($__CLIOPTS['custom'])) {
 		$goblinAP = isset($__CLIOPTS['gap']) ? $__CLIOPTS['gap'] : 3;
-		$goblinHit = isset($__CLIOPTS['ghp']) ? $__CLIOPTS['ghp'] : 3;
+		$goblinHit = isset($__CLIOPTS['ghp']) ? $__CLIOPTS['ghp'] : 200;
 		$elfAP = isset($__CLIOPTS['eap']) ? $__CLIOPTS['eap'] : 3;
-		$elfHit = isset($__CLIOPTS['ehp']) ? $__CLIOPTS['ehp'] : 3;
+		$elfHit = isset($__CLIOPTS['ehp']) ? $__CLIOPTS['ehp'] : 200;
 		$exitOnElfDeath = isset($__CLIOPTS['break']);
 
 		echo 'Running with custom settings: ', "\n";
@@ -514,7 +514,16 @@
 				$u->ap($elfAP);
 			}
 		}
-		doGame(null, $exitOnElfDeath, true);
+		$result = doGame(null, $exitOnElfDeath, true);
+
+		echo "\n";
+		echo 'Running with custom settings: ', "\n";
+		echo "\t", 'Goblin AP: ', $goblinAP, "\n";
+		echo "\t", 'Goblin HP: ', $goblinHit, "\n";
+		echo "\t", 'Elf AP: ', $elfAP, "\n";
+		echo "\t", 'Elf HP: ', $elfHit, "\n";
+		echo "\n\n";
+		echo 'Result: ', ($result[0] * $result[1]), ' (', $result[0], ' x ', $result[1], ')', "\n";
 		die();
 	}
 
