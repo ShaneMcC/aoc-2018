@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot', 'peaceful'];
+	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot', 'peaceful', 'max', 'fullscan'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --nocolour           Don\'t include colours in output';
 	$__CLI['extrahelp'][] = '      --hashdot            Use # and . in cave output';
@@ -10,12 +10,14 @@
 	$__CLI['extrahelp'][] = '      --part2              run part 2';
 	$__CLI['extrahelp'][] = '      --debugturn          debug each individual turn';
 	$__CLI['extrahelp'][] = '      --custom             run part 1 in custom mode';
+	$__CLI['extrahelp'][] = '      --max <#>            Abort after this many rounds';
 	$__CLI['extrahelp'][] = '      --eap <#>            Elf AP in custom mode';
 	$__CLI['extrahelp'][] = '      --ehp <#>            Elf HP in custom mode';
 	$__CLI['extrahelp'][] = '      --gap <#>            Goblin AP in custom mode';
 	$__CLI['extrahelp'][] = '      --ghp <#>            Goblin HP in custom mode';
 	$__CLI['extrahelp'][] = '      --break              Exit if an elf dies in custom mode';
 	$__CLI['extrahelp'][] = '      --peaceful           Don\'t engage in combat';
+	$__CLI['extrahelp'][] = '      --fullscan           Disable pathfinding optimisation';
 
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
@@ -97,7 +99,7 @@
 			return self::notType($this->type);
 		}
 
-		public function getCosts() {
+		public function getCosts($exitIfTarget = false) {
 			global $grid;
 
 			$costs = [];
@@ -106,15 +108,21 @@
 			$state = [[$loc, 0]];
 			$costs[$loc[1]][$loc[0]] = ['cost' => 0, 'path' => []];
 
+			$maxCost = PHP_INT_MAX;
+
 			while (!empty($state)) {
 				list($cur, $cost) = array_shift($state);
 
 				foreach (getSurrounding($cur[0], $cur[1]) as $s) {
+					if (($cost + 1) > $maxCost) { continue; }
+
 					if (isEmpty($s[0], $s[1]) && !isset($costs[$s[1]][$s[0]])) {
 						$state[] = [$s, ($cost + 1)];
 						$old = $costs[$cur[1]][$cur[0]];
 						$costs[$s[1]][$s[0]] = ['cost' => ($cost + 1), 'path' => $old['path']];
 						$costs[$s[1]][$s[0]]['path'][] = $s;
+					} else if ($exitIfTarget && Unit::findAt($s[0], $s[1]) != null && Unit::findAt($s[0], $s[1])->type() != $this->type()) {
+						$maxCost = $cost;
 					}
 				}
 			}
@@ -169,7 +177,7 @@
 				$targets = $this->getAllTargets();
 
 				// Get costs everywhere.
-				$costs = $this->getCosts();
+				$costs = $this->getCosts(!isset($__CLIOPTS['fullscan']));
 
 				// Get paths to the targets.
 				$lowestCosts = [];
@@ -506,6 +514,11 @@
 					}
 				}
 				$round--;
+			}
+
+			if (isset($__CLIOPTS['max']) && $round > $__CLIOPTS['max']) {
+				echo "\n", 'Aborting.', "\n\n\n";
+				break;
 			}
 		}
 
