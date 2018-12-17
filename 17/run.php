@@ -124,13 +124,17 @@
 	pour(500, 0);
 	if (isDebug()) { draw(); }
 
-	$part1 = 0;
+	$part1 = $part2 = 0;
 	for ($y = $minY; $y <= $maxY; $y++) {
 		for ($x = $minX - 2; $x <= $maxX + 2; $x++) {
-			if (get($x, $y) == '~' || get($x, $y) == '|') {
+			if (get($x, $y) == '~') {
+				$part1++;
+				$part2++;
+			} else if (get($x, $y) == '|') {
 				$part1++;
 			}
 		}
 	}
 
 	echo 'Part 1: ', $part1, "\n";
+	echo 'Part 2: ', $part2, "\n";
