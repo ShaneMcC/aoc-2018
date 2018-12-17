@@ -1,8 +1,11 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn'];
+	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot'];
 	$__CLI['extrahelp'] = [];
+	$__CLI['extrahelp'][] = '      --nocolour           Don\'t include colours in output';
+	$__CLI['extrahelp'][] = '      --hashdot            Use # and . in cave output';
 	$__CLI['extrahelp'][] = '      --id                 Include Elf IDs in debug output';
+	$__CLI['extrahelp'][] = '      --xy                 Include Elf XY in debug output';
 	$__CLI['extrahelp'][] = '      --part1              run part 1';
 	$__CLI['extrahelp'][] = '      --part2              run part 2';
 	$__CLI['extrahelp'][] = '      --debugturn          debug each individual turn';
@@ -131,7 +134,7 @@
 
 		public function takeTurn() {
 			global $__CLIOPTS;
-			$debugTurn = isDebug() && isset($__CLIOPTS['debugturn']);
+			$debugTurn = isDebug() && (isset($__CLIOPTS['debugturn']) || isset($__CLIOPTS['turndebug']));
 
 			// If we're dead we can't do anything.
 			if (!$this->isAlive()) { return FALSE; }
@@ -210,7 +213,8 @@
 							[$c, $t] = $p;
 							echo "\t\t", 'Unit ', $this, ' has a ', $c['cost'], '-cost path towards ', $t, ' (Path: ', $pathNumber++, ' of ', count($lowestCosts), ')', "\n";
 							$debugpath = [];
-							$marker = ($this->type() == 'G' ? "\033[1;31m" : "\033[0;32m") . '*' . "\033[0m";
+							$marker = '*';
+							if (!isset($__CLIOPTS['nocolour'])) { $marker = ($this->type() == 'G' ? "\033[1;31m" : "\033[0;32m") . $marker . "\033[0m"; }
 							foreach ($c['path'] as $p) { $debugpath[$p[1]][$p[0]] = ['cost' => $marker]; }
 							draw($debugpath, "\t\t\t");
 							echo "\n";
@@ -223,7 +227,8 @@
 					if ($debugTurn) {
 						echo "\t\t", 'Unit ', $this, ' is moving towards to ', implode(',', $moveTo), ' towards ', $t, "\n";
 						$debugpath = [];
-						$marker = ($this->type() == 'G' ? "\033[1;31m" : "\033[0;32m") . 'x' . "\033[0m";
+						$marker = 'x';
+						if (!isset($__CLIOPTS['nocolour'])) { $marker = ($this->type() == 'G' ? "\033[1;31m" : "\033[0;32m") . $marker . "\033[0m"; }
 						foreach ($c['path'] as $p) { $debugpath[$moveTo[1]][$moveTo[0]] = ['cost' => $marker]; }
 						draw($debugpath, "\t\t\t");
 						echo "\n";
@@ -244,8 +249,10 @@
 
 				// Find the adjacent target with the least HP.
 				$validTargets = [];
+				$possibleTargets = [];
 				$lowestHP = PHP_INT_MAX;
 				foreach ($adjacent as $target) {
+					$possibleTargets[] = $target;
 					if ($target->hp() < $lowestHP) {
 						$lowestHP = $target->hp();
 						$validTargets = [];
@@ -257,7 +264,16 @@
 
 				// If we have a target, attack them.
 				if (isset($validTargets[0])) {
-					if ($debugTurn) { echo "\t\t", 'Unit ', $this, ' is fighting: ', $validTargets[0], "\n"; }
+					if ($debugTurn) {
+						echo "\t\t", 'Unit ', $this, ' has ', count($possibleTargets), ' possible targets.', "\n";
+						foreach ($possibleTargets as $pt) {
+							echo "\t\t\t", 'Possible Target: ', $pt, "\n";
+							if (in_array($pt, $validTargets)) {
+								echo "\t\t\t\t", 'Target is valid.', "\n";
+							}
+						}
+						echo "\t\t", 'Unit ', $this, ' decides to fight: ', $validTargets[0], "\n";
+					}
 					$this->attack($validTargets[0]);
 					if ($debugTurn) { echo "\t\t\t", 'Result: ', $validTargets[0], "\n"; }
 				}
@@ -272,11 +288,14 @@
 			global $__CLIOPTS;
 
 			$result = '';
-			$result .= $this->type() == 'G' ? "\033[1;31m" : "\033[0;32m";
+			if (!isset($__CLIOPTS['nocolour'])) { $result .= $this->type() == 'G' ? "\033[1;31m" : "\033[0;32m"; }
 			$result .= $this->type();
-			$result .= "\033[0m";
+			if (!isset($__CLIOPTS['nocolour'])) { $result .= "\033[0m";}
 			if (isset($__CLIOPTS['id'])) {
 				$result .= '[' . $this->id() . ']';
+			}
+			if (isset($__CLIOPTS['xy'])) {
+				$result .= '{' . implode(',', $this->getLoc()) . '}';
 			}
 			$result .= '(' . $this->hp() . ')';
 			if (!$this->isAlive()) {
@@ -332,10 +351,12 @@
 		}
 	}
 
-	function resetGame($elfAP = 3) {
+	function resetGame($elfAP = null) {
 		global $input, $grid, $maxX;
 
 		Unit::resetUnits();
+
+		if ($elfAP == null) { $elfAP = 3; }
 
 		$grid = [];
 		$maxX = $x = $y = 0;
@@ -359,7 +380,7 @@
 	}
 
 	function draw($costs = [], $prefix = '') {
-		global $grid, $characters;
+		global $grid, $characters, $__CLIOPTS;
 
 		for ($y = 0; $y < count($grid); $y++) {
 			$lineCharacters = [];
@@ -368,13 +389,13 @@
 				$unit = Unit::findAt($x, $y);
 
 				if ($unit !== NULL) {
-					echo $unit->type() == 'G' ? "\033[1;31m" : "\033[0;32m";
+					if (!isset($__CLIOPTS['nocolour'])) { echo $unit->type() == 'G' ? "\033[1;31m" : "\033[0;32m"; }
 					echo $unit->type();
-					echo "\033[0m";
+					if (!isset($__CLIOPTS['nocolour'])) { echo "\033[0m"; }
 					$lineCharacters[] = $unit;
 				} else {
 					$bit = $grid[$y][$x];
-					$bit = $bit == '#' ? '█' : ' ';
+					if (!isset($__CLIOPTS['hashdot'])) { $bit = $bit == '#' ? '█' : ' '; }
 					echo isset($costs[$y][$x]) ? $costs[$y][$x]['cost'] : $bit ;
 				}
 			}
@@ -403,7 +424,7 @@
 
 	function doRound() {
 		global $__CLIOPTS;
-		$debugTurn = isDebug() && isset($__CLIOPTS['debugturn']);
+		$debugTurn = isDebug() && (isset($__CLIOPTS['debugturn']) || isset($__CLIOPTS['turndebug']));
 
 		if ($debugTurn) { echo 'Starting round.', "\n"; }
 
@@ -417,7 +438,7 @@
 	}
 
 
-	function doGame($elfAP = 3, $breakOnDeath = false, $noReset = false) {
+	function doGame($elfAP = null, $breakOnDeath = false, $noReset = false) {
 		if (!$noReset) {
 			resetGame($elfAP);
 		}
@@ -501,7 +522,7 @@
 	$runPart2 = isset($__CLIOPTS['part2']) || (!isset($__CLIOPTS['part1']) && !isset($__CLIOPTS['part2']));
 
 	if ($runPart1) {
-		$part1 = doGame(3, false);
+		$part1 = doGame(null, false);
 		echo 'Part 1: ', ($part1[0] * $part1[1]), ' (', $part1[0], ' x ', $part1[1], ')', "\n";
 	}
 
