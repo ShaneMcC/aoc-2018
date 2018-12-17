@@ -1,12 +1,13 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['custom', 'workers:', 'step:', 'multiplier:', 'noskip'];
+	$__CLI['long'] = ['custom', 'workers:', 'step:', 'multiplier:', 'noskip', 'actions'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --custom             Enable custom mode, to run the input with the given settings';
 	$__CLI['extrahelp'][] = '      --workers <#>        Run the input with this many workers (Custom Mode)';
 	$__CLI['extrahelp'][] = '      --step <#>           Per-Step added time (Custom Mode)';
 	$__CLI['extrahelp'][] = '      --multiplier <#>     Per-Step time multiplier (Custom Mode)';
 	$__CLI['extrahelp'][] = '      --noskip             Don\'t skip seconds.';
+	$__CLI['extrahelp'][] = '      --actions            Debug actions not state';
 
 	require_once(dirname(__FILE__) . '/../common/common.php');
 
@@ -25,6 +26,8 @@
 	function getSteps($workerCount, $perStep, $multiplier) {
 		global $steps, $__CLIOPTS;
 
+		$debugActions = isDebug() && isset($__CLIOPTS['actions']);
+
 		$order = [];
 		$pendingSteps = $steps;
 		$availableSteps = [];
@@ -32,7 +35,7 @@
 		$workers = [];
 		for ($i = 0; $i < $workerCount; $i++) { $workers[$i] = ['step' => '', 'remaining' => 0]; }
 
-		if (isDebug()) {
+		if (isDebug() && !$debugActions) {
 			echo 'Second ';
 			foreach ($workers as $id => $w) { echo sprintf('  Worker %-2s', $id + 1); }
 			echo '  Done';
@@ -41,6 +44,7 @@
 
 		$busy = 0;
 		for ($time = 0; true; $time++) {
+			if ($debugActions) { echo 'At ', $time, ':', "\n"; }
 			// Step all workers.
 			$busy = 0;
 			$minRemaining = PHP_INT_MAX;
@@ -51,6 +55,10 @@
 				if ($workers[$id]['remaining'] <= 0) {
 					$order[] = $w['step'];
 					$workers[$id]['step'] = '';
+
+					if ($debugActions) {
+						echo "\t", 'Worker ', $id, ' finished with ', $w['step'], "\n";
+					}
 				} else {
 					$busy++;
 					$minRemaining = min($minRemaining, $workers[$id]['remaining']);
@@ -80,12 +88,16 @@
 							$workers[$id]['remaining'] = $perStep + ($multiplier * (ord($s) - 64));
 							$minRemaining = min($minRemaining, $workers[$id]['remaining']);
 							$busy++;
+
+							if ($debugActions) {
+								echo "\t", 'Worker ', $id, ' takes ', $s, ' (until: ', $time + $workers[$id]['remaining'], ')', "\n";
+							}
 						}
 					}
 				}
 			}
 
-			if (isDebug()) {
+			if (isDebug() && !$debugActions) {
 				echo sprintf('%4s   ', $time);
 				foreach ($workers as $id => $w) {
 					echo sprintf('     %-2s    ', (!empty($w['step']) ? $w['step'] : '.'));
@@ -105,7 +117,7 @@
 				$minRemaining--;
 				$time += $minRemaining;
 
-				if (isDebug()) { echo ' ... Skipping ', $minRemaining, ' ...', "\n"; }
+				if (isDebug() && !$debugActions) { echo ' ... Skipping ', $minRemaining, ' ...', "\n"; }
 
 				foreach ($workers as $id => $w) {
 					$workers[$id]['remaining'] -= $minRemaining;
