@@ -28,6 +28,19 @@
 
 		$debugActions = isDebug() && isset($__CLIOPTS['actions']);
 
+		if (isDebug()) {
+			ksort($steps);
+			foreach ($steps as $step => $s) {
+				if (empty($s['requires'])) {
+					echo $step, ' has no requirements', "\n";
+				} else {
+					echo $step, ' requires: ', implode(', ', $s['requires']), "\n";
+				}
+			}
+			echo "\n";
+		}
+
+
 		$order = [];
 		$pendingSteps = $steps;
 		$availableSteps = [];
@@ -57,7 +70,9 @@
 					$workers[$id]['step'] = '';
 
 					if ($debugActions) {
-						echo "\t", 'Worker ', $id, ' finished with ', $w['step'], "\n";
+						echo "\t";
+						echo ($workerCount > 1) ? 'Worker ' . $id . ' finished with ' : 'Finished: ';
+						echo $w['step'], "\n";
 					}
 				} else {
 					$busy++;
@@ -70,6 +85,7 @@
 				foreach ($pendingSteps as $id => $step) {
 					foreach ($step['requires'] as $b) {
 						if (!in_array($b, $order)) {
+
 							continue 2;
 						}
 					}
@@ -90,7 +106,14 @@
 							$busy++;
 
 							if ($debugActions) {
-								echo "\t", 'Worker ', $id, ' takes ', $s, ' (until: ', $time + $workers[$id]['remaining'], ')', "\n";
+								echo "\t";
+								echo ($workerCount > 1) ? 'Worker ' . $id . ' takes ' : 'Take: ';
+								echo $s, ' From: {', implode(',', array_merge([$s], $availableSteps)),'}';
+
+								if ($workers[$id]['remaining'] > $time + 1) {
+									echo ' (until: ', $time + $workers[$id]['remaining'], ')';
+								}
+								echo "\n";
 							}
 						}
 					}
