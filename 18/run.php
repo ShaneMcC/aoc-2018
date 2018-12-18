@@ -53,10 +53,30 @@
 	}
 
 	function run($grid, $minutes) {
+		$history = [];
+		$dupe = -1;
 
 		if (isDebug()) { draw($grid); }
 		for ($minute = 1; $minute <= $minutes; $minute++) {
 			$grid = tick($grid);
+
+			$history[] = $grid;
+			if (count($history) > 100) { array_shift($history); }
+			for ($i = 1; $i < count($history); $i++) {
+				if ($history[count($history) - 1 - $i] == $grid) {
+					$dupe = $i;
+					$loop = ($minute - $dupe);
+					$diff = ($minutes - $loop) % $dupe;
+
+					if (isDebug()) {
+						echo 'Found duplicate state: ', $i, ' states ago.', "\n";
+						echo 'Entered loop at: ', $loop, "\n";
+						echo $minutes, ' is ', $diff, ' after loop.', "\n";
+					}
+
+					return $history[count($history) - 1 - $i + $diff];
+				}
+			}
 
 			if (isDebug()) {
 				echo 'After ', $minute, ' minute', ($minute != 1 ? 's' : ''), ':', "\n";
@@ -64,6 +84,10 @@
 			}
 		}
 
+		return $grid;
+	}
+
+	function countGrid($grid) {
 		$wood = $lumber = 0;
 		foreach ($grid as $row) {
 			foreach ($row as $acre) {
@@ -75,6 +99,9 @@
 		return [$wood, $lumber];
 	}
 
-	list($wood, $lumber) = run($grid, 10);
-	$part1 = $wood * $lumber;
-	echo 'Part 1: ', $wood, 'x', $lumber, ' = ', $part1, "\n";
+	list($wood, $lumber) = countGrid(run($grid, 10));
+	echo 'Part 1: ', $wood, 'x', $lumber, ' = ', ($wood * $lumber), "\n";
+
+
+	list($wood, $lumber) = countGrid(run($grid, 1000000000));
+	echo 'Part 2: ', $wood, 'x', $lumber, ' = ', ($wood * $lumber), "\n";
