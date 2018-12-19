@@ -1,70 +1,13 @@
 #!/usr/bin/php
 <?php
 	require_once(dirname(__FILE__) . '/../common/common.php');
+	require_once(dirname(__FILE__) . '/Day16VM.php');
 	$input = getInputLines();
 
 	$samples = [];
 	$test = [];
 
-	class VM {
-		private $instructions = [];
-		private $reg = [0, 0, 0, 0];
-		private $map = [];
 
-		public function __construct() {
-			$this->init();
-		}
-
-		private function init() {
-			$this->instructions['addr'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a] + $vm->reg[$b]; };
-			$this->instructions['addi'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a] + $b; };
-
-			$this->instructions['mulr'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a] * $vm->reg[$b]; };
-			$this->instructions['muli'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a] * $b; };
-
-			$this->instructions['banr'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a] & $vm->reg[$b]; };
-			$this->instructions['bani'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a] & $b; };
-
-			$this->instructions['borr'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a] | $vm->reg[$b]; };
-			$this->instructions['bori'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a] | $b; };
-
-			$this->instructions['setr'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $vm->reg[$a]; };
-			$this->instructions['seti'] = function($vm, $a, $b, $c) { $vm->reg[$c] = $a; };
-
-			$this->instructions['gtir'] = function($vm, $a, $b, $c) { $vm->reg[$c] = ($a > $vm->reg[$b]) ? 1 : 0; };
-			$this->instructions['gtri'] = function($vm, $a, $b, $c) { $vm->reg[$c] = ($vm->reg[$a] > $b) ? 1 : 0; };
-			$this->instructions['gtrr'] = function($vm, $a, $b, $c) { $vm->reg[$c] = ($vm->reg[$a] > $vm->reg[$b]) ? 1 : 0; };
-
-			$this->instructions['eqir'] = function($vm, $a, $b, $c) { $vm->reg[$c] = ($a == $vm->reg[$b]) ? 1 : 0; };
-			$this->instructions['eqri'] = function($vm, $a, $b, $c) { $vm->reg[$c] = ($vm->reg[$a] == $b) ? 1 : 0; };
-			$this->instructions['eqrr'] = function($vm, $a, $b, $c) { $vm->reg[$c] = ($vm->reg[$a] == $vm->reg[$b]) ? 1 : 0; };
-		}
-
-		public function getInstructions() {
-			return array_keys($this->instructions);
-		}
-
-		public function setReg($reg) {
-			$this->reg = $reg;
-		}
-
-		public function getReg() {
-			return $this->reg;
-		}
-
-		public function setMap($map) {
-			$this->map = $map;
-		}
-
-		public function run($instr, $args) {
-			$instr = isset($this->map[$instr]) ? $this->map[$instr] : $instr;
-
-			if (isset($this->instructions[$instr])) {
-				array_unshift($args, $this);
-				call_user_func_array($this->instructions[$instr], $args);
-			}
-		}
-	}
 
 
 	$sample = NULL;
@@ -82,7 +25,7 @@
 			list($all, $a, $b, $c, $d) = $m;
 
 			if ($sample == NULL) {
-				$test[] = [$a, $b, $c, $d];
+				$test[] = [$a, [$b, $c, $d]];
 			} else {
 				$sample['instr'] = $a;
 				$sample['args'] = [$b, $c, $d];
@@ -90,17 +33,18 @@
 		}
 	}
 
-	$vm = new VM();
+	$vm = new Day16VM();
 
 	foreach ($samples as $s => $sample) {
 		foreach ($vm->getInstructions() as $instr) {
-			$vm->setReg($sample['before']);
-			$vm->run($instr, $sample['args']);
+			$vm->loadProgram([[$instr, $sample['args']]]);
+			$vm->setRegisters($sample['before']);
+			$vm->run();
 
-			$match = ($vm->getReg() == $sample['after']);
+			$match = ($vm->getRegisters() == $sample['after']);
 
 			if (isDebug()) {
-				echo '[', implode(', ', $sample['before']) ,'] => ', $instr, ' => [', implode(', ', $vm->getReg()), ']', ($match ? ' Matches: ' . implode(', ', $sample['after']) : ''), "\n";
+				echo '[', implode(', ', $sample['before']) ,'] => ', $instr, ' => [', implode(', ', $vm->getRegisters()), ']', ($match ? ' Matches: ' . implode(', ', $sample['after']) : ''), "\n";
 			}
 
 			if ($match) {
@@ -118,7 +62,6 @@
 
 	echo 'Part 1: ', $part1, "\n";
 
-
 	$map = [];
 	while (count($map) < 16) {
 		foreach (array_keys($samples) as $s) {
@@ -127,8 +70,6 @@
 			if (count($samples[$s]['behaves']) == 1) {
 				$num = $samples[$s]['instr'];
 				$name = array_keys($samples[$s]['behaves'])[0];
-				if (isset($map[$num])) { continue; }
-
 				if (isDebug()) { echo $num, ' only behaves like ', $name, "\n"; }
 
 				// Add to the map
@@ -142,11 +83,10 @@
 		}
 	}
 
-	$vm = new VM();
-	$vm->setMap($map);
-	foreach ($test as $args) {
-		$instr = array_shift($args);
-		$vm->run($instr, $args);
-	}
+	$vm = new Day16VM();
+	$vm->loadProgram($test);
+	$vm->setRegisters([0, 0, 0, 0]);
+	$vm->mapInstrs($map);
+	$vm->run();
 
-	echo 'Part 2: ', $vm->getReg()[0], "\n";
+	echo 'Part 2: ', $vm->getReg(0), "\n";
