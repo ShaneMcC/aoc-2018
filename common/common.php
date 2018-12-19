@@ -49,7 +49,7 @@
 		if (getenv("TIMED") !== FALSE) {
 			return realpath(dirname($_SERVER['PHP_SELF'])) . '/input.txt';
 		} else {
-			if (!posix_isatty(STDIN)) {
+			if (function_exists('posix_isatty') && !posix_isatty(STDIN)) {
 				return 'php://stdin';
 			} else if (isset($__CLIOPTS['file']) && file_exists($__CLIOPTS['file'])) {
 				return $__CLIOPTS['file'];
