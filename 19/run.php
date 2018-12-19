@@ -87,7 +87,6 @@
 
 	echo 'Part 1: ', $vm->getReg(0), "\n";
 
-
 	$vm->loadProgram(Day18VM::parseInstrLines($input));
 	$vm->setRegisters([1, 0, 0, 0, 0, 0]);
 	$vm->run();
