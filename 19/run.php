@@ -7,7 +7,9 @@
 	$ip = explode(' ', array_shift($input))[1];
 
 	class Day18VM extends Day16VM {
-		protected $ip = NULL;
+		public $stepCount = 0;
+
+		public $ip = NULL;
 
 		public function __construct($ip) {
 			parent::__construct();
@@ -21,6 +23,11 @@
 			$res = parent::step();
 
 			$this->location = $this->getReg($this->ip);
+
+			$this->stepCount++;
+			if ($this->stepCount > 5000) {
+				die('Error.');
+			}
 
 			return $res;
 		}
@@ -36,9 +43,52 @@
 	}
 
 	$vm = new Day18VM($ip);
+	$vm->setDebug(isDebug());
+
+	$wantedReg = 0;
+
+	$vm->addReadAhead(function ($vm) use (&$wantedReg) {
+		$loc = $vm->getLocation();
+		$readAheadOps = 0;
+
+		if (!$vm->hasData($loc + $readAheadOps)) { return FALSE; }
+		$data = [];
+		for ($i = 0; $i <= $readAheadOps; $i++) { $data[$i] = $vm->getData($loc + $i); }
+
+		// Check for matching instructions.
+		if ($data[0][0] == 'seti' && $data[0][1][2] == $vm->ip) {
+			// Hax:
+			$wanted = $vm->getReg($wantedReg);
+
+			$divisors = [];
+			for ($i = 1; $i <= $wanted; $i++) {
+				if ($wanted % $i == 0) {
+					$divisors[] = $i;
+				}
+			}
+
+			$vm->setReg(0, array_sum($divisors));
+
+			$vm->end(0);
+			$vm->setReg($vm->ip, $vm->getLocation()); // Horrible IP Counter.
+			return $vm->getLocation();
+		}
+
+		if ($data[0][0] == 'muli' && $data[0][1][1] == '11') {
+			$wantedReg = $data[0][1][2];
+		}
+
+		return FALSE;
+	});
+
 	$vm->loadProgram(Day18VM::parseInstrLines($input));
 	$vm->setRegisters([0, 0, 0, 0, 0, 0]);
-	$vm->setDebug(isDebug());
 	$vm->run();
 
 	echo 'Part 1: ', $vm->getReg(0), "\n";
+
+
+	$vm->loadProgram(Day18VM::parseInstrLines($input));
+	$vm->setRegisters([1, 0, 0, 0, 0, 0]);
+	$vm->run();
+	echo 'Part 2: ', $vm->getReg(0), "\n";
