@@ -12,11 +12,11 @@
 			$this->instrs['mulr'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, $vm->getReg($a) * $vm->getReg($b)); };
 			$this->instrs['muli'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, $vm->getReg($a) * $b); };
 
-			$this->instrs['banr'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, $vm->getReg($a) & $vm->getReg($b)); };
-			$this->instrs['bani'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, $vm->getReg($a) & $b); };
+			$this->instrs['banr'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, (int)$vm->getReg($a) & (int)$vm->getReg($b)); };
+			$this->instrs['bani'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, (int)$vm->getReg($a) & (int)$b); };
 
-			$this->instrs['borr'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, $vm->getReg($a) | $vm->getReg($b)); };
-			$this->instrs['bori'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, $vm->getReg($a) | $b); };
+			$this->instrs['borr'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, (int)$vm->getReg($a) | (int)$vm->getReg($b)); };
+			$this->instrs['bori'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, (int)$vm->getReg($a) | (int)$b); };
 
 			$this->instrs['setr'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, $vm->getReg($a)); };
 			$this->instrs['seti'] = function($vm, $args) { list($a, $b, $c) = $args; $vm->setReg($c, $a); };
