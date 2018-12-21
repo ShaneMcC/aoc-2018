@@ -6,45 +6,54 @@
 	$input = getInputLines();
 	$ip = explode(' ', array_shift($input))[1];
 
-	$vm = new Day19VM($ip);
-	$vm->setDebug(isDebug());
-	$vm->setLimit(-1);
+	$prog = Day19VM::parseInstrLines($input);
 
-	$part1 = $part2 = 0;
-	$seen = [];
+	$magic = [];
+	$magic[] = (int)$prog[6][1][1];
+	$magic[] = (int)$prog[7][1][0];
+	$magic[] = (int)$prog[8][1][1];
+	$magic[] = (int)$prog[10][1][1];
+	$magic[] = (int)$prog[11][1][1];
+	$magic[] = (int)$prog[12][1][1];
+	$magic[] = (int)$prog[13][1][0];
 
-	$vm->addReadAhead(function ($vm) use (&$part1, &$part2, &$seen) {
-		$loc = $vm->getLocation();
-		$readAheadOps = 0;
+	function emulate($magic) {
+		$part1 = 0;
+		$part2 = 0;
+		$seen = [];
 
-		if (!$vm->hasData($loc + $readAheadOps)) { return FALSE; }
-		$data = [];
-		for ($i = 0; $i <= $readAheadOps; $i++) { $data[$i] = $vm->getData($loc + $i); }
+		$c = 0;
 
-		// Check when we compare reg 0 to something.
-		if ($data[0][0] == 'eqrr' && ($data[0][1][0] == 0 || $data[0][1][1] == 0)) {
-			$wanted = $data[0][1][0] == 0 ? $data[0][1][1] : $data[0][1][0];
-			$val = $vm->getReg($wanted);
+		while (true) {
+			$a = $c | $magic[0];
+			$c = $magic[1];
 
-			if ($part1 == 0) { $part1 = $val; }
+			while (true) {
+				$c = ((($c + ($a & $magic[2])) & $magic[3]) * $magic[4]) & $magic[5];
 
-			if (in_array($val, $seen)) {
-				$part2 = $val;
+				if ($magic[6] > $a) {
+					if ($part1 == 0) {
+						$part1 = $c;
+					}
 
-				$vm->end(0);
-				$vm->setReg($vm->ip, $vm->getLocation()); // Horrible IP Counter.
-				return $vm->getLocation();
+					if (in_array($c, $seen)) {
+						break 2;
+					} else {
+						$seen[] = $c;
+						$part2 = $c;
+						break;
+					}
+				} else {
+					$a = floor($a / $magic[6]);
+				}
 			}
-			$seen[] = $val;
 		}
 
-		return FALSE;
-	});
+	    return [$part1, $part2];
 
+	}
 
-	$vm->loadProgram(Day19VM::parseInstrLines($input));
-	$vm->setRegisters([0, 0, 0, 0, 0, 0]);
-	$vm->run();
+	list($part1, $part2) = emulate($magic);
 
 	echo 'Part 1: ', $part1, "\n";
 	echo 'Part 2: ', $part2, "\n";
