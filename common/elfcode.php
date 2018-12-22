@@ -42,28 +42,11 @@
 	$instrs['eqri'] = function($a, $b, $c) { return sprintf('r%s = (r%s == %s)', $c, $a, $b); };
 	$instrs['eqrr'] = function($a, $b, $c) { return sprintf('r%s = (r%s == r%s)', $c, $a, $b); };
 
-	if (isset($__CLIOPTS['noelf'])) {
-		unset($__CLIOPTS['elffirst']);
-	}
+	$elfCode = [];
+	$converted = [];
 
 	$i = 0;
-	if (!isset($__CLIOPTS['noelf'])) {
-		if (isset($__CLIOPTS['elffirst'])) {
-			echo $ipline, "\n";
-		} else {
-			echo str_repeat(' ', 38), '# ', $ipline, "\n";
-		}
-	}
-
 	foreach ($prog as $p) {
-		$line = $p[0] . ' ' . implode(' ', $p[1]);
-
-		if (isset($__CLIOPTS['elffirst'])) {
-			echo $line, str_repeat(' ', 38 - strlen($line)), '# ';
-		}
-
-		echo sprintf('%3s:    ', $i);
-
 		$code = call_user_func_array($instrs[$p[0]], $p[1]);
 		$code = str_replace('r' . $ip, 'ip', $code);
 
@@ -82,14 +65,46 @@
 			$code = $m[1] . ' ' . $m[3] . '= ' . $m[2];
 		}
 
-		echo $code;
 
-		if (!isset($__CLIOPTS['noelf'])) {
-			if (!isset($__CLIOPTS['elffirst'])) {
-				echo str_repeat(' ', 30 - strlen($code)), '# ', $line;
-			}
+		$elfCode[$i] = $p[0] . ' ' . implode(' ', $p[1]);
+		$converted[$i] = sprintf('%3s:    %s', $i, $code);
+
+		$i++;
+	}
+
+
+
+
+
+
+
+	// Output.
+	$colWidth = 40;
+
+	if (isset($__CLIOPTS['noelf'])) {
+		unset($__CLIOPTS['elffirst']);
+	}
+
+	if (!isset($__CLIOPTS['noelf'])) {
+		if (isset($__CLIOPTS['elffirst'])) {
+			echo $ipline, "\n";
+		} else {
+			echo str_repeat(' ', $colWidth), '# ', $ipline, "\n";
+		}
+	}
+
+	for ($j = 0; $j < $i; $j++) {
+		if (isset($__CLIOPTS['elffirst'])) {
+			echo $elfCode[$j];
+			echo str_repeat(' ', $colWidth - strlen($elfCode[$j])), '# ';
+		}
+
+		echo $converted[$j];
+
+		if (!isset($__CLIOPTS['noelf']) && !isset($__CLIOPTS['elffirst'])) {
+			echo str_repeat(' ', $colWidth - strlen($converted[$j])), '# ';
+			echo $elfCode[$j];
 		}
 
 		echo "\n";
-		$i++;
 	}
