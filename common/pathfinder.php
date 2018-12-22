@@ -155,7 +155,7 @@
 			while (count($states) > 0) {
 				$state = array_shift($states);
 
-				if ($maxSteps == -1 || call_user_func($this->hooks['isFinished'], $state)) {
+				if (call_user_func($this->hooks['isFinished'], $state)) {
 					$finalState = $state;
 					if (isset($this->hooks['solveFinishedState'])) { call_user_func($this->hooks['solveFinishedState'], $state, $visted); }
 					break;

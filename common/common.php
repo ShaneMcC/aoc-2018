@@ -277,7 +277,6 @@
 		return (substr($haystack, -$length) === $needle);
 	}
 
-
 	// Remove unneeded stuff when timing.
 	if (getenv("TIMED") === FALSE) {
 		/**
