@@ -188,14 +188,17 @@
 	parseInput(0, 0, $input);
 	$costs = getCosts($grid);
 
+	$part2 = 0;
 	$furthest = NULL;
 	foreach ($costs as $y => $row) {
 		foreach ($row as $c => $cell) {
 			if ($furthest == NULL || $cell['cost'] > $furthest['cost']) {
 				$furthest = $cell;
 			}
+			if ($cell['cost'] >= 1000) { $part2++; }
 		}
 	}
 
 	if (isDebug()) { draw($grid, $furthest['path']); }
 	echo 'Part 1: ', $furthest['cost'], "\n";
+	echo 'Part 2: ', $part2, "\n";
