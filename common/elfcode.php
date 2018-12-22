@@ -2,9 +2,10 @@
 <?php
 	$__NOHEADER = true;
 
-	$__CLI['long'] = ['codefirst'];
+	$__CLI['long'] = ['elffirst', 'noelf'];
 	$__CLI['extrahelp'] = [];
-	$__CLI['extrahelp'][] = '      --codefirst          Show code first not elfcode.';
+	$__CLI['extrahelp'][] = '      --elffirst           Show code first not elfcode.';
+	$__CLI['extrahelp'][] = '      --noelf              Don\'t show elfcode';
 
 	require_once(dirname(__FILE__) . '/common.php');
 	require_once(dirname(__FILE__) . '/../19/Day19VM.php');
@@ -41,17 +42,23 @@
 	$instrs['eqri'] = function($a, $b, $c) { return sprintf('r%s = (r%s == %s)', $c, $a, $b); };
 	$instrs['eqrr'] = function($a, $b, $c) { return sprintf('r%s = (r%s == r%s)', $c, $a, $b); };
 
+	if (isset($__CLIOPTS['noelf'])) {
+		unset($__CLIOPTS['elffirst']);
+	}
+
 	$i = 0;
-	if (!isset($__CLIOPTS['codefirst'])) {
-		echo $ipline, "\n";
-	} else {
-		echo str_repeat(' ', 38), '# ', $ipline, "\n";
+	if (!isset($__CLIOPTS['noelf'])) {
+		if (isset($__CLIOPTS['elffirst'])) {
+			echo $ipline, "\n";
+		} else {
+			echo str_repeat(' ', 38), '# ', $ipline, "\n";
+		}
 	}
 
 	foreach ($prog as $p) {
 		$line = $p[0] . ' ' . implode(' ', $p[1]);
 
-		if (!isset($__CLIOPTS['codefirst'])) {
+		if (isset($__CLIOPTS['elffirst'])) {
 			echo $line, str_repeat(' ', 38 - strlen($line)), '# ';
 		}
 
@@ -77,8 +84,10 @@
 
 		echo $code;
 
-		if (isset($__CLIOPTS['codefirst'])) {
-			echo str_repeat(' ', 30 - strlen($code)), '# ', $line;
+		if (!isset($__CLIOPTS['noelf'])) {
+			if (!isset($__CLIOPTS['elffirst'])) {
+				echo str_repeat(' ', 30 - strlen($code)), '# ', $line;
+			}
 		}
 
 		echo "\n";
