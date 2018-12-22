@@ -483,5 +483,5 @@ PRESENT;
 				die();
 			}
 		} catch (Exception $e) { /* Do nothing. */ }
-		if (!isset($__CLIOPTS['w'])) { echo getAsciiHeader(), "\n"; }
+		if (!isset($__CLIOPTS['w']) && !isset($__NOHEADER)) { echo getAsciiHeader(), "\n"; }
 	}
