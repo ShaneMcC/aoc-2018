@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot', 'peaceful', 'max', 'fullscan'];
+	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot', 'peaceful', 'max', 'fullscan', 'nooptions'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --nocolour           Don\'t include colours in output';
 	$__CLI['extrahelp'][] = '      --hashdot            Use # and . in cave output';
@@ -18,6 +18,7 @@
 	$__CLI['extrahelp'][] = '      --break              Exit if an elf dies in custom mode';
 	$__CLI['extrahelp'][] = '      --peaceful           Don\'t engage in combat';
 	$__CLI['extrahelp'][] = '      --fullscan           Disable pathfinding optimisation';
+	$__CLI['extrahelp'][] = '      --nooptions          Don\'t show options for moves, just final choices.';
 
 	require_once(dirname(__FILE__) . '/../common/common.php');
 	$input = getInputLines();
@@ -155,6 +156,7 @@
 		public function takeTurn() {
 			global $__CLIOPTS;
 			$debugTurn = isDebug() && (isset($__CLIOPTS['debugturn']) || isset($__CLIOPTS['turndebug']));
+			$debugOptions = !isset($__CLIOPTS['nooptions']);
 
 			// If we're dead we can't do anything.
 			if (!$this->isAlive()) { return FALSE; }
@@ -227,7 +229,7 @@
 						}
 					});
 
-					if ($debugTurn) {
+					if ($debugTurn && $debugOptions) {
 						$pathNumber = 1;
 						foreach ($lowestCosts as $p) {
 							[$c, $t] = $p;
@@ -285,11 +287,13 @@
 				// If we have a target, attack them.
 				if (isset($validTargets[0])) {
 					if ($debugTurn) {
-						echo "\t\t", 'Unit ', $this, ' has ', count($possibleTargets), ' possible targets.', "\n";
-						foreach ($possibleTargets as $pt) {
-							echo "\t\t\t", 'Possible Target: ', $pt, "\n";
-							if (in_array($pt, $validTargets)) {
-								echo "\t\t\t\t", 'Target is valid.', "\n";
+						if ($debugOptions) {
+							echo "\t\t", 'Unit ', $this, ' has ', count($possibleTargets), ' possible targets.', "\n";
+							foreach ($possibleTargets as $pt) {
+								echo "\t\t\t", 'Possible Target: ', $pt, "\n";
+								if (in_array($pt, $validTargets)) {
+									echo "\t\t\t\t", 'Target is valid.', "\n";
+								}
 							}
 						}
 						echo "\t\t", 'Unit ', $this, ' decides to fight: ', $validTargets[0], "\n";
