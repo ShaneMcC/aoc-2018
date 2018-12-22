@@ -11,7 +11,8 @@
 
 	$input = getInputLines();
 
-	$ip = explode(' ', array_shift($input))[1];
+	$ipline = array_shift($input);
+	$ip = explode(' ', $ipline)[1];
 
 	$prog = Day19VM::parseInstrLines($input);
 
@@ -41,13 +42,18 @@
 	$instrs['eqrr'] = function($a, $b, $c) { return sprintf('r%s = (r%s == r%s)', $c, $a, $b); };
 
 	$i = 0;
+	if (!isset($__CLIOPTS['codefirst'])) {
+		echo $ipline, "\n";
+	} else {
+		echo str_repeat(' ', 38), '# ', $ipline, "\n";
+	}
+
 	foreach ($prog as $p) {
 		$line = $p[0] . ' ' . implode(' ', $p[1]);
 
 		if (!isset($__CLIOPTS['codefirst'])) {
 			echo $line, str_repeat(' ', 38 - strlen($line)), '# ';
 		}
-
 
 		echo sprintf('%3s:    ', $i);
 
@@ -67,7 +73,6 @@
 		}
 
 		echo $code;
-
 
 		if (isset($__CLIOPTS['codefirst'])) {
 			echo str_repeat(' ', 30 - strlen($code)), '# ', $line;
