@@ -60,8 +60,7 @@
 		$code = call_user_func_array($instrs[$p[0]], $p[1]);
 		$code = str_replace('r' . $ip, 'ip', $code);
 
-
-		if (preg_match('#^\ip = (.*)#', $code, $m)) {
+		if (preg_match('#^ip = (.*)#', $code, $m)) {
 			$count = 0;
 			$code = str_replace([' + ip', 'ip + '], '', $m[1], $count);
 
@@ -70,6 +69,10 @@
 			} else {
 				$code = 'jmp @' . $code;
 			}
+		} else if (preg_match('#^(.*) = \1 ([+*&|]) (.*)#', $code, $m)) {
+			$code = $m[1] . ' ' . $m[2] . '= ' . $m[3];
+		} else if (preg_match('#^(.*) = (.*)([+*&|]) \1#', $code, $m)) {
+			$code = $m[1] . ' ' . $m[3] . '= ' . $m[2];
 		}
 
 		echo $code;
