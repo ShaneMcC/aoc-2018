@@ -76,8 +76,6 @@
 
 
 
-
-
 	// Output.
 	$colWidth = 40;
 
