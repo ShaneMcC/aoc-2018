@@ -48,19 +48,22 @@
 		return getErosionLevel($x, $y) % 3;
 	}
 
-	function draw() {
+	function draw($highlight = []) {
 		global $grid, $tX, $tY;
 
 		foreach ($grid as $y => $row) {
 			foreach ($row as $x => $cell) {
-				if ($x == 0 && $y == 0) { echo 'M'; continue; }
-				if ($x == $tX && $y == $tY) { echo 'T'; continue; }
+				if (in_array([$x, $y], $highlight)) { echo "\033[1;31m"; }
+				if ($x == 0 && $y == 0) { echo 'M'; }
+				else if ($x == $tX && $y == $tY) { echo 'T'; }
+				else {
+					$type = getRegionType($x, $y);
 
-				$type = getRegionType($x, $y);
-
-				if ($type == 0) { echo '.'; }
-				else if ($type == 1) { echo '='; }
-				else if ($type == 2) { echo '|'; }
+					if ($type == 0) { echo '.'; }
+					else if ($type == 1) { echo '='; }
+					else if ($type == 2) { echo '|'; }
+				}
+				if (in_array([$x, $y], $highlight)) { echo "\033[0m"; }
 			}
 			echo "\n";
 		}
@@ -85,7 +88,7 @@
 	function calculateGrid() {
 		global $grid, $tX, $tY;
 
-		$buffer = 100;
+		$buffer = 75;
 
 		for ($y = 0; $y <= $tY + $buffer; $y++) {
 			for ($x = 0; $x <= $tX + $buffer; $x++) {
@@ -121,12 +124,12 @@
 
 		$queue = new SPLPriorityQueue();
 		$queue->setExtractFlags(SplPriorityQueue::EXTR_BOTH);
-		$queue->insert([0, 0, 'T'], 0);
+		$queue->insert([0, 0, 'T', []], 0);
 
 		while (!$queue->isEmpty()) {
 			$q = $queue->extract();
 
-			list($x, $y, $tool) = $q['data'];
+			list($x, $y, $tool, $path) = $q['data'];
 
 			// SPLPriorityQueue treats higher numbers as higher priority,
 			// so we using negatives when we insert, so get the real value here.
@@ -136,7 +139,8 @@
 			// we can ignore it.
 			if (isset($costs[$y][$x][$tool])) { continue; }
 
-			$costs[$y][$x][$tool] = $cost;
+			if (isDebug()) { $path[] = [$x, $y]; }
+			$costs[$y][$x][$tool] = ['cost' => $cost, 'path' => $path];
 
 			$type = getRegionType($x, $y);
 
@@ -148,15 +152,15 @@
 				if (!isset($grid[$pY][$pX])) { continue; }
 				$pType = getRegionType($pX, $pY);
 
-				if (in_array($tool, $validTools[$pType])) {
-					$queue->insert([$pX, $pY, $tool], -($cost + 1));
+				if (in_array($tool, $validTools[$pType])&& !isset($costs[$pY][$pX][$tool])) {
+					$queue->insert([$pX, $pY, $tool, $path], -($cost + 1));
 				}
 			}
 
 			// Also try changing tool here and visiting ourselves.
 			foreach ($validTools[$type] as $t) {
-				if ($tool != $t) {
-					$queue->insert([$x, $y, $t], -($cost + 7));
+				if ($tool != $t && !isset($costs[$y][$x][$t])) {
+					$queue->insert([$x, $y, $t, $path], -($cost + 7));
 				}
 			}
 		}
@@ -166,4 +170,5 @@
 
 	$costs = getCosts();
 
-	echo 'Part 2: ', $costs[$tY][$tX]['T'], "\n";
+	if (isDebug()) { draw($costs[$tY][$tX]['T']['path']); }
+	echo 'Part 2: ', $costs[$tY][$tX]['T']['cost'], "\n";
