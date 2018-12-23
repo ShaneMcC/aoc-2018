@@ -2,10 +2,11 @@
 <?php
 	$__NOHEADER = true;
 
-	$__CLI['long'] = ['elffirst', 'noelf'];
+	$__CLI['long'] = ['elffirst', 'noelf', 'alphareg'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --elffirst           Show code first not elfcode.';
 	$__CLI['extrahelp'][] = '      --noelf              Don\'t show elfcode';
+	$__CLI['extrahelp'][] = '      --alphareg           Convert registers to letters';
 
 	require_once(dirname(__FILE__) . '/common.php');
 	require_once(dirname(__FILE__) . '/../19/Day19VM.php');
@@ -45,10 +46,21 @@
 	$elfCode = [];
 	$converted = [];
 
+	$registerMap = [];
+	$diff = 0;
+	for ($i = 0; $i <= max($ip, 6); $i++) {
+		if ($i == $ip) {
+			$registerMap['r' . $i] = 'ip';
+			$diff -= 1;
+		} else if (isset($__CLIOPTS['alphareg'])) {
+			$registerMap['r' . $i] = chr(65 + $i + $diff);
+		}
+	}
+
 	$i = 0;
 	foreach ($prog as $p) {
 		$code = call_user_func_array($instrs[$p[0]], $p[1]);
-		$code = str_replace('r' . $ip, 'ip', $code);
+		$code = str_replace(array_keys($registerMap), array_values($registerMap), $code);
 
 		if (preg_match('#^ip = (.*)#', $code, $m)) {
 			$count = 0;
