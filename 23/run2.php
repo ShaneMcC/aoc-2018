@@ -19,11 +19,13 @@
 
 
 	function manhattan3($x1, $y1, $z1, $x2, $y2, $z2) {
-		return floor(abs($x1 - $x2)) + floor(abs($y1 - $y2)) + floor(abs($z1 - $z2));
+		return intval(abs($x1 - $x2)) + intval(abs($y1 - $y2)) + intval(abs($z1 - $z2));
 	}
 
-	function inRange($entries, $x, $y, $z, $range = null, $scale = 1) {
+	function inRange($entries, $x, $y, $z, $range = null, $scale = 1, $required = 0) {
 		global $entries;
+
+		$available = count($entries);
 
 		$result = 0;
 		foreach ($entries as $e) {
@@ -31,6 +33,9 @@
 
 			if ($m <= ($range == NULL ? $e['range'] / $scale : $range / $scale)) {
 				$result++;
+			} else {
+				$available--;
+				if ($available < $required) { break; }
 			}
 		}
 
@@ -55,15 +60,19 @@
 			$bestM3 = PHP_INT_MAX;
 			$best = [0, 0, 0];
 
+			$rangeX = [intval($minX / $scale), intval($maxX / $scale)];
+			$rangeY = [intval($minY / $scale), intval($maxY / $scale)];
+			$rangeZ = [intval($minZ / $scale), intval($maxZ / $scale)];
+
 			if (isDebug()) {
 				echo 'Scale: ', $scale, "\n";
-				echo "\t", floor($minX / $scale), '...', floor($maxX / $scale), ', ', floor($minY / $scale), '...', floor($maxY / $scale), ', ', floor($minZ / $scale), '...', floor($maxZ / $scale), "\n";
+				echo "\t", $rangeX[0], '...', $rangeX[1], ', ', $rangeY[0], '...', $rangeY[1], ', ', $rangeZ[0], '...', $rangeZ[1], "\n";
 			}
 
-			for ($x = floor($minX / $scale); $x <= $maxX / $scale; $x++) {
-				for ($y = floor($minY / $scale); $y <= $maxY / $scale; $y ++) {
-					for ($z = floor($minZ / $scale); $z <= $maxZ / $scale; $z ++) {
-						$inRange = inRange($entries, $x, $y, $z, null, $scale);
+			for ($x = $rangeX[0]; $x <= $rangeX[1]; $x++) {
+				for ($y = $rangeY[0]; $y <= $rangeY[1]; $y++) {
+					for ($z = $rangeZ[0]; $z <= $rangeZ[1]; $z++) {
+						$inRange = inRange($entries, $x, $y, $z, null, $scale, $bestRange);
 
 						if ($inRange >= $bestRange) {
 							$m3 = manhattan3($x, $y, $z, 0, 0, 0);
@@ -80,7 +89,6 @@
 					}
 				}
 			}
-
 
 			if (isDebug() && $bestRange > 0) {
 				echo "\t", 'Best Range: ', $bestRange, "\n";
