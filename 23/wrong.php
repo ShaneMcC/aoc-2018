@@ -19,23 +19,18 @@
 
 
 	function manhattan3($x1, $y1, $z1, $x2, $y2, $z2) {
-		return intval(abs($x1 - $x2)) + intval(abs($y1 - $y2)) + intval(abs($z1 - $z2));
+		return abs($x1 - $x2) + abs($y1 - $y2) + abs($z1 - $z2);
 	}
 
-	function inRange($entries, $x, $y, $z, $range = null, $scale = 1, $required = 0) {
+	function inRange($entries, $x, $y, $z, $range = null) {
 		global $entries;
-
-		$available = count($entries);
 
 		$result = 0;
 		foreach ($entries as $e) {
-			$m = manhattan3($x, $y, $z, $e['x'] / $scale, $e['y'] / $scale, $e['z'] / $scale);
+			$m = manhattan3($x, $y, $z, $e['x'], $e['y'], $e['z']);
 
-			if ($m <= ($range == NULL ? $e['range'] / $scale : $range / $scale)) {
+			if ($m <= ($range == NULL ? $e['range'] : $range)) {
 				$result++;
-			} else {
-				$available--;
-				if ($available < $required) { break; }
 			}
 		}
 
@@ -53,26 +48,18 @@
 		$minZ = array_reduce($entries, function($c, $i) { return min($c, $i['z']); }, PHP_INT_MAX);
 		$maxZ = array_reduce($entries, function($c, $i) { return max($c, $i['z']); }, PHP_INT_MIN);
 
-		$scale = 10000000;
+
+		$dist = floor(min([($maxX - $minX) / 2, ($maxY - $minY) / 2, ($maxZ - $minZ) / 2]));
+
+		$bestRange = 0;
+		$best = [0, 0, 0];
+		$bestM3 = PHP_INT_MAX;
 
 		while (true) {
-			$bestRange = 0;
-			$bestM3 = PHP_INT_MAX;
-			$best = [0, 0, 0];
-
-			$rangeX = [intval($minX / $scale), intval($maxX / $scale)];
-			$rangeY = [intval($minY / $scale), intval($maxY / $scale)];
-			$rangeZ = [intval($minZ / $scale), intval($maxZ / $scale)];
-
-			if (isDebug()) {
-				echo 'Scale: ', $scale, "\n";
-				echo "\t", $rangeX[0], '...', $rangeX[1], ', ', $rangeY[0], '...', $rangeY[1], ', ', $rangeZ[0], '...', $rangeZ[1], "\n";
-			}
-
-			for ($x = $rangeX[0]; $x <= $rangeX[1]; $x++) {
-				for ($y = $rangeY[0]; $y <= $rangeY[1]; $y++) {
-					for ($z = $rangeZ[0]; $z <= $rangeZ[1]; $z++) {
-						$inRange = inRange($entries, $x, $y, $z, null, $scale, $bestRange);
+			for ($x = $minX; $x <= $maxX; $x += $dist) {
+				for ($y = $minY; $y <= $maxY; $y += $dist) {
+					for ($z = $minZ; $z <= $maxZ; $z += $dist) {
+						$inRange = inRange($entries, $x, $y, $z);
 
 						if ($inRange >= $bestRange) {
 							$m3 = manhattan3($x, $y, $z, 0, 0, 0);
@@ -81,8 +68,6 @@
 								$bestRange = $inRange;
 								$bestM3 = $m3;
 								$best = [$x, $y, $z];
-
-								// if (isDebug()) { echo "\t\t", $bestRange, ' => ', implode(',', $best), "\n"; }
 							}
 						}
 
@@ -90,27 +75,20 @@
 				}
 			}
 
-			if (isDebug() && $bestRange > 0) {
-				echo "\t", 'Best Range: ', $bestRange, "\n";
-				echo "\t", 'Best: ', implode(',', $best), "\n";
-				echo "\t", 'BestM3: ', $bestM3, "\n";
-			}
-
-			$padding = 3;
-			list($minX, $maxX) = [($best[0] - $padding) * $scale, ($best[0] + $padding) * $scale];
-			list($minY, $maxY) = [($best[1] - $padding) * $scale, ($best[1] + $padding) * $scale];
-			list($minZ, $maxZ) = [($best[2] - $padding) * $scale, ($best[2] + $padding) * $scale];
-
-			if ($scale == 1) {
+			if ($dist <= 1) {
 				return [$best, $bestRange, $bestM3];
-			}
+			} else {
+				list($minX, $maxX) = [$best[0] - $dist, $best[0] + $dist];
+				list($minY, $maxY) = [$best[1] - $dist, $best[1] + $dist];
+				list($minZ, $maxZ) = [$best[2] - $dist, $best[2] + $dist];
 
-			$scale /= 10;
+				$dist = floor($dist / 2);
+			}
 		}
 	}
 
 	$part1 = inRange($entries, $entries[$strongest]['x'], $entries[$strongest]['y'], $entries[$strongest]['z'], $entries[$strongest]['range']);
 	echo 'Part 1: ', $part1, "\n";
 
-	list($best, $bestRange, $bestM3) = calculateBestPoint($entries);
+	[$best, $bestRange, $bestM3] = calculateBestPoint($entries);
 	echo 'Part 2: ', $bestM3, ' (',implode(',', $best), ' has ', $bestRange, ' bots in range.)', "\n";
