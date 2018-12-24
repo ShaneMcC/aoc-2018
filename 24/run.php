@@ -77,7 +77,10 @@
 			$targets = [];
 			foreach (Unit::getUnits() as $u) {
 				if ($u->team == $this->team) { continue; }
-				$targets[] = $u;
+
+				if ($this->calculateDamageTo($u) > 0) {
+					$targets[] = $u;
+				}
 			}
 
 			usort($targets, function ($a, $b) {
@@ -153,6 +156,8 @@
 			$units = Unit::getUnits($team);
 			usort($units, ['Unit', 'sort']);
 
+			if (empty($units)) { return FALSE; }
+
 			foreach ($units as $unit) {
 				$targets[$unit->id] = NULL;
 				$wanted = $unit->getTargets();
@@ -168,10 +173,8 @@
 					}
 				}
 
-				if (empty($wanted)) { return FALSE; }
-
 				foreach ($wanted as $t) {
-					if (!in_array($t->id, $targets) && $unit->calculateDamageTo($t) > 0) {
+					if (!in_array($t->id, $targets)) {
 						$targets[$unit->id] = $t->id;
 						if (isDebug()) { echo "\t\t", 'Unit ', $unit->id, ' picks target: ', $t->id, "\n\n"; }
 						break;
