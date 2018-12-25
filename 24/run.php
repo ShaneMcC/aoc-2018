@@ -132,7 +132,7 @@
 		}
 	}
 
-	function resetGame() {
+	function resetGame($boost = 0) {
 		global $input;
 
 		Unit::reset();
@@ -143,6 +143,10 @@
 				$team = $m[1];
 			} else if (preg_match('#([0-9]+) units? each with ([0-9]+) hit points? (?:\((.*)\) )?with an attack that does ([0-9]+) (.*) damage at initiative ([0-9]+)$#SADi', $details, $m)) {
 				list($all, $count, $hit, $info, $attack, $attackType, $initiative) = $m;
+
+				if ($team == 'Immune System') {
+					$attack += $boost;
+				}
 
 				new Unit($team, $count, $hit, $info, $attack, $attackType, $initiative);
 			}
@@ -218,7 +222,12 @@
 			}
 		}
 
-		return TRUE;
+		$state = [];
+		foreach (Unit::getUnits() as $unit) {
+			$state[] = $unit->id.' '.$unit->getEffectivePower();
+		}
+
+		return $state;
 	}
 
 
@@ -242,20 +251,38 @@
 	}
 
 	function playGame() {
+		$lastState = [];
 		for ($round = 1; true; $round++) {
 			if (isDebug()) { echo 'Start Round ', $round, ':', "\n"; }
 			$result = doRound($round);
 			if (isDebug()) { echo "\n\n"; }
 
-			if (!$result) { break; }
+			if ($result === FALSE) {
+				$winner = count(Unit::getUnits('Immune System')) > count(Unit::getUnits('Infection')) ? 'Immune System' : 'Infection';
+				return [$round, $winner];
+			} else if ($result == $lastState) {
+				return [$round, 'Stalemate'];
+			}
+			$lastState = $result;
 		}
 
-		return $round;
+		return FALSE;
 	}
 
 	resetGame();
-	playGame();
+	list($rounds, $winner) = playGame();
 	$part1 = 0;
 	foreach (Unit::getUnits() as $u) { $part1 += $u->count; }
 
-	echo 'Part 1: ', $part1, "\n";
+	echo 'Part 1: ', $part1, ' (', $winner, ' won after ', $rounds, ')', "\n";
+
+	for ($boost = 1; true; $boost++) {
+		resetGame($boost);
+		list($rounds, $winner) = playGame();
+
+		if ($winner == 'Immune System') { break; }
+	}
+
+	$part2 = 0;
+	foreach (Unit::getUnits() as $u) { $part2 += $u->count; }
+	echo 'Part 2: ', $part2, ' (', $winner, ' won after ', $rounds, ' with boost: ', $boost, ')', "\n";
