@@ -1,0 +1,1388 @@
+Initial: 
+██████████    
+█ E    G █    E[0]{2,1}(200) G[1]{7,1}(200)
+█      ███    
+█ G      █    G[2]{2,3}(200)
+██████████    
+
+
+
+Starting round.
+	Unit 0 takes a turn.
+		Unit E[0]{2,1}(200) wants to move.
+		Unit E[0]{2,1}(200) has a 1-cost path towards G[2]{2,3}(200) (Path: 1 of 1)
+			██████████    
+			█ E    G █    E[0]{2,1}(200) G[1]{7,1}(200)
+			█ *    ███    
+			█ G      █    G[2]{2,3}(200)
+			██████████    
+
+		Unit E[0]{2,1}(200) is moving towards to 2,2 towards G[2]{2,3}(200)
+			██████████    
+			█ E    G █    E[0]{2,1}(200) G[1]{7,1}(200)
+			█ x    ███    
+			█ G      █    G[2]{2,3}(200)
+			██████████    
+
+		Unit E[0]{2,2}(200) wants to fight.
+		Unit E[0]{2,2}(200) has 1 possible targets.
+			Possible Target: G[2]{2,3}(200)
+				Target is valid.
+		Unit E[0]{2,2}(200) decides to fight: G[2]{2,3}(200)
+			Result: G[2]{2,3}(197)
+
+	Unit 1 takes a turn.
+		Unit G[1]{7,1}(200) wants to move.
+		Unit G[1]{7,1}(200) has a 5-cost path towards E[0]{2,2}(200) (Path: 1 of 2)
+			██████████    
+			█ *****G █    G[1]{7,1}(200)
+			█ E    ███    E[0]{2,2}(200)
+			█ G      █    G[2]{2,3}(197)
+			██████████    
+
+		Unit G[1]{7,1}(200) has a 5-cost path towards E[0]{2,2}(200) (Path: 2 of 2)
+			██████████    
+			█  ****G █    G[1]{7,1}(200)
+			█ E*   ███    E[0]{2,2}(200)
+			█ G      █    G[2]{2,3}(197)
+			██████████    
+
+		Unit G[1]{7,1}(200) is moving towards to 6,1 towards E[0]{2,2}(200)
+			██████████    
+			█     xG █    G[1]{7,1}(200)
+			█ E    ███    E[0]{2,2}(200)
+			█ G      █    G[2]{2,3}(197)
+			██████████    
+
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(197) wants to fight.
+		Unit G[2]{2,3}(197) has 1 possible targets.
+			Possible Target: E[0]{2,2}(200)
+				Target is valid.
+		Unit G[2]{2,3}(197) decides to fight: E[0]{2,2}(200)
+			Result: E[0]{2,2}(197)
+
+
+After round 1:
+██████████    
+█     G  █    G[1]{6,1}(200)
+█ E    ███    E[0]{2,2}(197)
+█ G      █    G[2]{2,3}(197)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{6,1}(200) wants to move.
+		Unit G[1]{6,1}(200) has a 4-cost path towards E[0]{2,2}(197) (Path: 1 of 2)
+			██████████    
+			█ ****G  █    G[1]{6,1}(200)
+			█ E    ███    E[0]{2,2}(197)
+			█ G      █    G[2]{2,3}(197)
+			██████████    
+
+		Unit G[1]{6,1}(200) has a 4-cost path towards E[0]{2,2}(197) (Path: 2 of 2)
+			██████████    
+			█  ***G  █    G[1]{6,1}(200)
+			█ E*   ███    E[0]{2,2}(197)
+			█ G      █    G[2]{2,3}(197)
+			██████████    
+
+		Unit G[1]{6,1}(200) is moving towards to 5,1 towards E[0]{2,2}(197)
+			██████████    
+			█    xG  █    G[1]{6,1}(200)
+			█ E    ███    E[0]{2,2}(197)
+			█ G      █    G[2]{2,3}(197)
+			██████████    
+
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(197) wants to fight.
+		Unit E[0]{2,2}(197) has 1 possible targets.
+			Possible Target: G[2]{2,3}(197)
+				Target is valid.
+		Unit E[0]{2,2}(197) decides to fight: G[2]{2,3}(197)
+			Result: G[2]{2,3}(194)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(194) wants to fight.
+		Unit G[2]{2,3}(194) has 1 possible targets.
+			Possible Target: E[0]{2,2}(197)
+				Target is valid.
+		Unit G[2]{2,3}(194) decides to fight: E[0]{2,2}(197)
+			Result: E[0]{2,2}(194)
+
+
+After round 2:
+██████████    
+█    G   █    G[1]{5,1}(200)
+█ E    ███    E[0]{2,2}(194)
+█ G      █    G[2]{2,3}(194)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{5,1}(200) wants to move.
+		Unit G[1]{5,1}(200) has a 3-cost path towards E[0]{2,2}(194) (Path: 1 of 2)
+			██████████    
+			█ ***G   █    G[1]{5,1}(200)
+			█ E    ███    E[0]{2,2}(194)
+			█ G      █    G[2]{2,3}(194)
+			██████████    
+
+		Unit G[1]{5,1}(200) has a 3-cost path towards E[0]{2,2}(194) (Path: 2 of 2)
+			██████████    
+			█  **G   █    G[1]{5,1}(200)
+			█ E*   ███    E[0]{2,2}(194)
+			█ G      █    G[2]{2,3}(194)
+			██████████    
+
+		Unit G[1]{5,1}(200) is moving towards to 4,1 towards E[0]{2,2}(194)
+			██████████    
+			█   xG   █    G[1]{5,1}(200)
+			█ E    ███    E[0]{2,2}(194)
+			█ G      █    G[2]{2,3}(194)
+			██████████    
+
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(194) wants to fight.
+		Unit E[0]{2,2}(194) has 1 possible targets.
+			Possible Target: G[2]{2,3}(194)
+				Target is valid.
+		Unit E[0]{2,2}(194) decides to fight: G[2]{2,3}(194)
+			Result: G[2]{2,3}(191)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(191) wants to fight.
+		Unit G[2]{2,3}(191) has 1 possible targets.
+			Possible Target: E[0]{2,2}(194)
+				Target is valid.
+		Unit G[2]{2,3}(191) decides to fight: E[0]{2,2}(194)
+			Result: E[0]{2,2}(191)
+
+
+After round 3:
+██████████    
+█   G    █    G[1]{4,1}(200)
+█ E    ███    E[0]{2,2}(191)
+█ G      █    G[2]{2,3}(191)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{4,1}(200) wants to move.
+		Unit G[1]{4,1}(200) has a 2-cost path towards E[0]{2,2}(191) (Path: 1 of 2)
+			██████████    
+			█ **G    █    G[1]{4,1}(200)
+			█ E    ███    E[0]{2,2}(191)
+			█ G      █    G[2]{2,3}(191)
+			██████████    
+
+		Unit G[1]{4,1}(200) has a 2-cost path towards E[0]{2,2}(191) (Path: 2 of 2)
+			██████████    
+			█  *G    █    G[1]{4,1}(200)
+			█ E*   ███    E[0]{2,2}(191)
+			█ G      █    G[2]{2,3}(191)
+			██████████    
+
+		Unit G[1]{4,1}(200) is moving towards to 3,1 towards E[0]{2,2}(191)
+			██████████    
+			█  xG    █    G[1]{4,1}(200)
+			█ E    ███    E[0]{2,2}(191)
+			█ G      █    G[2]{2,3}(191)
+			██████████    
+
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(191) wants to fight.
+		Unit E[0]{2,2}(191) has 1 possible targets.
+			Possible Target: G[2]{2,3}(191)
+				Target is valid.
+		Unit E[0]{2,2}(191) decides to fight: G[2]{2,3}(191)
+			Result: G[2]{2,3}(188)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(188) wants to fight.
+		Unit G[2]{2,3}(188) has 1 possible targets.
+			Possible Target: E[0]{2,2}(191)
+				Target is valid.
+		Unit G[2]{2,3}(188) decides to fight: E[0]{2,2}(191)
+			Result: E[0]{2,2}(188)
+
+
+After round 4:
+██████████    
+█  G     █    G[1]{3,1}(200)
+█ E    ███    E[0]{2,2}(188)
+█ G      █    G[2]{2,3}(188)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{3,1}(200) wants to move.
+		Unit G[1]{3,1}(200) has a 1-cost path towards E[0]{2,2}(188) (Path: 1 of 2)
+			██████████    
+			█ *G     █    G[1]{3,1}(200)
+			█ E    ███    E[0]{2,2}(188)
+			█ G      █    G[2]{2,3}(188)
+			██████████    
+
+		Unit G[1]{3,1}(200) has a 1-cost path towards E[0]{2,2}(188) (Path: 2 of 2)
+			██████████    
+			█  G     █    G[1]{3,1}(200)
+			█ E*   ███    E[0]{2,2}(188)
+			█ G      █    G[2]{2,3}(188)
+			██████████    
+
+		Unit G[1]{3,1}(200) is moving towards to 2,1 towards E[0]{2,2}(188)
+			██████████    
+			█ xG     █    G[1]{3,1}(200)
+			█ E    ███    E[0]{2,2}(188)
+			█ G      █    G[2]{2,3}(188)
+			██████████    
+
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(188)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(188)
+			Result: E[0]{2,2}(185)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(185) wants to fight.
+		Unit E[0]{2,2}(185) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(188)
+				Target is valid.
+		Unit E[0]{2,2}(185) decides to fight: G[2]{2,3}(188)
+			Result: G[2]{2,3}(185)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(185) wants to fight.
+		Unit G[2]{2,3}(185) has 1 possible targets.
+			Possible Target: E[0]{2,2}(185)
+				Target is valid.
+		Unit G[2]{2,3}(185) decides to fight: E[0]{2,2}(185)
+			Result: E[0]{2,2}(182)
+
+
+After round 5:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(182)
+█ G      █    G[2]{2,3}(185)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(182)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(182)
+			Result: E[0]{2,2}(179)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(179) wants to fight.
+		Unit E[0]{2,2}(179) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(185)
+				Target is valid.
+		Unit E[0]{2,2}(179) decides to fight: G[2]{2,3}(185)
+			Result: G[2]{2,3}(182)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(182) wants to fight.
+		Unit G[2]{2,3}(182) has 1 possible targets.
+			Possible Target: E[0]{2,2}(179)
+				Target is valid.
+		Unit G[2]{2,3}(182) decides to fight: E[0]{2,2}(179)
+			Result: E[0]{2,2}(176)
+
+
+After round 6:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(176)
+█ G      █    G[2]{2,3}(182)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(176)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(176)
+			Result: E[0]{2,2}(173)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(173) wants to fight.
+		Unit E[0]{2,2}(173) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(182)
+				Target is valid.
+		Unit E[0]{2,2}(173) decides to fight: G[2]{2,3}(182)
+			Result: G[2]{2,3}(179)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(179) wants to fight.
+		Unit G[2]{2,3}(179) has 1 possible targets.
+			Possible Target: E[0]{2,2}(173)
+				Target is valid.
+		Unit G[2]{2,3}(179) decides to fight: E[0]{2,2}(173)
+			Result: E[0]{2,2}(170)
+
+
+After round 7:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(170)
+█ G      █    G[2]{2,3}(179)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(170)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(170)
+			Result: E[0]{2,2}(167)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(167) wants to fight.
+		Unit E[0]{2,2}(167) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(179)
+				Target is valid.
+		Unit E[0]{2,2}(167) decides to fight: G[2]{2,3}(179)
+			Result: G[2]{2,3}(176)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(176) wants to fight.
+		Unit G[2]{2,3}(176) has 1 possible targets.
+			Possible Target: E[0]{2,2}(167)
+				Target is valid.
+		Unit G[2]{2,3}(176) decides to fight: E[0]{2,2}(167)
+			Result: E[0]{2,2}(164)
+
+
+After round 8:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(164)
+█ G      █    G[2]{2,3}(176)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(164)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(164)
+			Result: E[0]{2,2}(161)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(161) wants to fight.
+		Unit E[0]{2,2}(161) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(176)
+				Target is valid.
+		Unit E[0]{2,2}(161) decides to fight: G[2]{2,3}(176)
+			Result: G[2]{2,3}(173)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(173) wants to fight.
+		Unit G[2]{2,3}(173) has 1 possible targets.
+			Possible Target: E[0]{2,2}(161)
+				Target is valid.
+		Unit G[2]{2,3}(173) decides to fight: E[0]{2,2}(161)
+			Result: E[0]{2,2}(158)
+
+
+After round 9:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(158)
+█ G      █    G[2]{2,3}(173)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(158)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(158)
+			Result: E[0]{2,2}(155)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(155) wants to fight.
+		Unit E[0]{2,2}(155) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(173)
+				Target is valid.
+		Unit E[0]{2,2}(155) decides to fight: G[2]{2,3}(173)
+			Result: G[2]{2,3}(170)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(170) wants to fight.
+		Unit G[2]{2,3}(170) has 1 possible targets.
+			Possible Target: E[0]{2,2}(155)
+				Target is valid.
+		Unit G[2]{2,3}(170) decides to fight: E[0]{2,2}(155)
+			Result: E[0]{2,2}(152)
+
+
+After round 10:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(152)
+█ G      █    G[2]{2,3}(170)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(152)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(152)
+			Result: E[0]{2,2}(149)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(149) wants to fight.
+		Unit E[0]{2,2}(149) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(170)
+				Target is valid.
+		Unit E[0]{2,2}(149) decides to fight: G[2]{2,3}(170)
+			Result: G[2]{2,3}(167)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(167) wants to fight.
+		Unit G[2]{2,3}(167) has 1 possible targets.
+			Possible Target: E[0]{2,2}(149)
+				Target is valid.
+		Unit G[2]{2,3}(167) decides to fight: E[0]{2,2}(149)
+			Result: E[0]{2,2}(146)
+
+
+After round 11:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(146)
+█ G      █    G[2]{2,3}(167)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(146)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(146)
+			Result: E[0]{2,2}(143)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(143) wants to fight.
+		Unit E[0]{2,2}(143) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(167)
+				Target is valid.
+		Unit E[0]{2,2}(143) decides to fight: G[2]{2,3}(167)
+			Result: G[2]{2,3}(164)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(164) wants to fight.
+		Unit G[2]{2,3}(164) has 1 possible targets.
+			Possible Target: E[0]{2,2}(143)
+				Target is valid.
+		Unit G[2]{2,3}(164) decides to fight: E[0]{2,2}(143)
+			Result: E[0]{2,2}(140)
+
+
+After round 12:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(140)
+█ G      █    G[2]{2,3}(164)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(140)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(140)
+			Result: E[0]{2,2}(137)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(137) wants to fight.
+		Unit E[0]{2,2}(137) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(164)
+				Target is valid.
+		Unit E[0]{2,2}(137) decides to fight: G[2]{2,3}(164)
+			Result: G[2]{2,3}(161)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(161) wants to fight.
+		Unit G[2]{2,3}(161) has 1 possible targets.
+			Possible Target: E[0]{2,2}(137)
+				Target is valid.
+		Unit G[2]{2,3}(161) decides to fight: E[0]{2,2}(137)
+			Result: E[0]{2,2}(134)
+
+
+After round 13:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(134)
+█ G      █    G[2]{2,3}(161)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(134)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(134)
+			Result: E[0]{2,2}(131)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(131) wants to fight.
+		Unit E[0]{2,2}(131) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(161)
+				Target is valid.
+		Unit E[0]{2,2}(131) decides to fight: G[2]{2,3}(161)
+			Result: G[2]{2,3}(158)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(158) wants to fight.
+		Unit G[2]{2,3}(158) has 1 possible targets.
+			Possible Target: E[0]{2,2}(131)
+				Target is valid.
+		Unit G[2]{2,3}(158) decides to fight: E[0]{2,2}(131)
+			Result: E[0]{2,2}(128)
+
+
+After round 14:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(128)
+█ G      █    G[2]{2,3}(158)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(128)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(128)
+			Result: E[0]{2,2}(125)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(125) wants to fight.
+		Unit E[0]{2,2}(125) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(158)
+				Target is valid.
+		Unit E[0]{2,2}(125) decides to fight: G[2]{2,3}(158)
+			Result: G[2]{2,3}(155)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(155) wants to fight.
+		Unit G[2]{2,3}(155) has 1 possible targets.
+			Possible Target: E[0]{2,2}(125)
+				Target is valid.
+		Unit G[2]{2,3}(155) decides to fight: E[0]{2,2}(125)
+			Result: E[0]{2,2}(122)
+
+
+After round 15:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(122)
+█ G      █    G[2]{2,3}(155)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(122)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(122)
+			Result: E[0]{2,2}(119)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(119) wants to fight.
+		Unit E[0]{2,2}(119) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(155)
+				Target is valid.
+		Unit E[0]{2,2}(119) decides to fight: G[2]{2,3}(155)
+			Result: G[2]{2,3}(152)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(152) wants to fight.
+		Unit G[2]{2,3}(152) has 1 possible targets.
+			Possible Target: E[0]{2,2}(119)
+				Target is valid.
+		Unit G[2]{2,3}(152) decides to fight: E[0]{2,2}(119)
+			Result: E[0]{2,2}(116)
+
+
+After round 16:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(116)
+█ G      █    G[2]{2,3}(152)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(116)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(116)
+			Result: E[0]{2,2}(113)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(113) wants to fight.
+		Unit E[0]{2,2}(113) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(152)
+				Target is valid.
+		Unit E[0]{2,2}(113) decides to fight: G[2]{2,3}(152)
+			Result: G[2]{2,3}(149)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(149) wants to fight.
+		Unit G[2]{2,3}(149) has 1 possible targets.
+			Possible Target: E[0]{2,2}(113)
+				Target is valid.
+		Unit G[2]{2,3}(149) decides to fight: E[0]{2,2}(113)
+			Result: E[0]{2,2}(110)
+
+
+After round 17:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(110)
+█ G      █    G[2]{2,3}(149)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(110)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(110)
+			Result: E[0]{2,2}(107)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(107) wants to fight.
+		Unit E[0]{2,2}(107) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(149)
+				Target is valid.
+		Unit E[0]{2,2}(107) decides to fight: G[2]{2,3}(149)
+			Result: G[2]{2,3}(146)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(146) wants to fight.
+		Unit G[2]{2,3}(146) has 1 possible targets.
+			Possible Target: E[0]{2,2}(107)
+				Target is valid.
+		Unit G[2]{2,3}(146) decides to fight: E[0]{2,2}(107)
+			Result: E[0]{2,2}(104)
+
+
+After round 18:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(104)
+█ G      █    G[2]{2,3}(146)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(104)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(104)
+			Result: E[0]{2,2}(101)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(101) wants to fight.
+		Unit E[0]{2,2}(101) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(146)
+				Target is valid.
+		Unit E[0]{2,2}(101) decides to fight: G[2]{2,3}(146)
+			Result: G[2]{2,3}(143)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(143) wants to fight.
+		Unit G[2]{2,3}(143) has 1 possible targets.
+			Possible Target: E[0]{2,2}(101)
+				Target is valid.
+		Unit G[2]{2,3}(143) decides to fight: E[0]{2,2}(101)
+			Result: E[0]{2,2}(98)
+
+
+After round 19:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(98)
+█ G      █    G[2]{2,3}(143)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(98)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(98)
+			Result: E[0]{2,2}(95)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(95) wants to fight.
+		Unit E[0]{2,2}(95) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(143)
+				Target is valid.
+		Unit E[0]{2,2}(95) decides to fight: G[2]{2,3}(143)
+			Result: G[2]{2,3}(140)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(140) wants to fight.
+		Unit G[2]{2,3}(140) has 1 possible targets.
+			Possible Target: E[0]{2,2}(95)
+				Target is valid.
+		Unit G[2]{2,3}(140) decides to fight: E[0]{2,2}(95)
+			Result: E[0]{2,2}(92)
+
+
+After round 20:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(92)
+█ G      █    G[2]{2,3}(140)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(92)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(92)
+			Result: E[0]{2,2}(89)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(89) wants to fight.
+		Unit E[0]{2,2}(89) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(140)
+				Target is valid.
+		Unit E[0]{2,2}(89) decides to fight: G[2]{2,3}(140)
+			Result: G[2]{2,3}(137)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(137) wants to fight.
+		Unit G[2]{2,3}(137) has 1 possible targets.
+			Possible Target: E[0]{2,2}(89)
+				Target is valid.
+		Unit G[2]{2,3}(137) decides to fight: E[0]{2,2}(89)
+			Result: E[0]{2,2}(86)
+
+
+After round 21:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(86)
+█ G      █    G[2]{2,3}(137)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(86)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(86)
+			Result: E[0]{2,2}(83)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(83) wants to fight.
+		Unit E[0]{2,2}(83) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(137)
+				Target is valid.
+		Unit E[0]{2,2}(83) decides to fight: G[2]{2,3}(137)
+			Result: G[2]{2,3}(134)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(134) wants to fight.
+		Unit G[2]{2,3}(134) has 1 possible targets.
+			Possible Target: E[0]{2,2}(83)
+				Target is valid.
+		Unit G[2]{2,3}(134) decides to fight: E[0]{2,2}(83)
+			Result: E[0]{2,2}(80)
+
+
+After round 22:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(80)
+█ G      █    G[2]{2,3}(134)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(80)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(80)
+			Result: E[0]{2,2}(77)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(77) wants to fight.
+		Unit E[0]{2,2}(77) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(134)
+				Target is valid.
+		Unit E[0]{2,2}(77) decides to fight: G[2]{2,3}(134)
+			Result: G[2]{2,3}(131)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(131) wants to fight.
+		Unit G[2]{2,3}(131) has 1 possible targets.
+			Possible Target: E[0]{2,2}(77)
+				Target is valid.
+		Unit G[2]{2,3}(131) decides to fight: E[0]{2,2}(77)
+			Result: E[0]{2,2}(74)
+
+
+After round 23:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(74)
+█ G      █    G[2]{2,3}(131)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(74)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(74)
+			Result: E[0]{2,2}(71)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(71) wants to fight.
+		Unit E[0]{2,2}(71) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(131)
+				Target is valid.
+		Unit E[0]{2,2}(71) decides to fight: G[2]{2,3}(131)
+			Result: G[2]{2,3}(128)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(128) wants to fight.
+		Unit G[2]{2,3}(128) has 1 possible targets.
+			Possible Target: E[0]{2,2}(71)
+				Target is valid.
+		Unit G[2]{2,3}(128) decides to fight: E[0]{2,2}(71)
+			Result: E[0]{2,2}(68)
+
+
+After round 24:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(68)
+█ G      █    G[2]{2,3}(128)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(68)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(68)
+			Result: E[0]{2,2}(65)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(65) wants to fight.
+		Unit E[0]{2,2}(65) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(128)
+				Target is valid.
+		Unit E[0]{2,2}(65) decides to fight: G[2]{2,3}(128)
+			Result: G[2]{2,3}(125)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(125) wants to fight.
+		Unit G[2]{2,3}(125) has 1 possible targets.
+			Possible Target: E[0]{2,2}(65)
+				Target is valid.
+		Unit G[2]{2,3}(125) decides to fight: E[0]{2,2}(65)
+			Result: E[0]{2,2}(62)
+
+
+After round 25:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(62)
+█ G      █    G[2]{2,3}(125)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(62)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(62)
+			Result: E[0]{2,2}(59)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(59) wants to fight.
+		Unit E[0]{2,2}(59) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(125)
+				Target is valid.
+		Unit E[0]{2,2}(59) decides to fight: G[2]{2,3}(125)
+			Result: G[2]{2,3}(122)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(122) wants to fight.
+		Unit G[2]{2,3}(122) has 1 possible targets.
+			Possible Target: E[0]{2,2}(59)
+				Target is valid.
+		Unit G[2]{2,3}(122) decides to fight: E[0]{2,2}(59)
+			Result: E[0]{2,2}(56)
+
+
+After round 26:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(56)
+█ G      █    G[2]{2,3}(122)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(56)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(56)
+			Result: E[0]{2,2}(53)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(53) wants to fight.
+		Unit E[0]{2,2}(53) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(122)
+				Target is valid.
+		Unit E[0]{2,2}(53) decides to fight: G[2]{2,3}(122)
+			Result: G[2]{2,3}(119)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(119) wants to fight.
+		Unit G[2]{2,3}(119) has 1 possible targets.
+			Possible Target: E[0]{2,2}(53)
+				Target is valid.
+		Unit G[2]{2,3}(119) decides to fight: E[0]{2,2}(53)
+			Result: E[0]{2,2}(50)
+
+
+After round 27:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(50)
+█ G      █    G[2]{2,3}(119)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(50)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(50)
+			Result: E[0]{2,2}(47)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(47) wants to fight.
+		Unit E[0]{2,2}(47) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(119)
+				Target is valid.
+		Unit E[0]{2,2}(47) decides to fight: G[2]{2,3}(119)
+			Result: G[2]{2,3}(116)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(116) wants to fight.
+		Unit G[2]{2,3}(116) has 1 possible targets.
+			Possible Target: E[0]{2,2}(47)
+				Target is valid.
+		Unit G[2]{2,3}(116) decides to fight: E[0]{2,2}(47)
+			Result: E[0]{2,2}(44)
+
+
+After round 28:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(44)
+█ G      █    G[2]{2,3}(116)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(44)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(44)
+			Result: E[0]{2,2}(41)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(41) wants to fight.
+		Unit E[0]{2,2}(41) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(116)
+				Target is valid.
+		Unit E[0]{2,2}(41) decides to fight: G[2]{2,3}(116)
+			Result: G[2]{2,3}(113)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(113) wants to fight.
+		Unit G[2]{2,3}(113) has 1 possible targets.
+			Possible Target: E[0]{2,2}(41)
+				Target is valid.
+		Unit G[2]{2,3}(113) decides to fight: E[0]{2,2}(41)
+			Result: E[0]{2,2}(38)
+
+
+After round 29:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(38)
+█ G      █    G[2]{2,3}(113)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(38)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(38)
+			Result: E[0]{2,2}(35)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(35) wants to fight.
+		Unit E[0]{2,2}(35) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(113)
+				Target is valid.
+		Unit E[0]{2,2}(35) decides to fight: G[2]{2,3}(113)
+			Result: G[2]{2,3}(110)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(110) wants to fight.
+		Unit G[2]{2,3}(110) has 1 possible targets.
+			Possible Target: E[0]{2,2}(35)
+				Target is valid.
+		Unit G[2]{2,3}(110) decides to fight: E[0]{2,2}(35)
+			Result: E[0]{2,2}(32)
+
+
+After round 30:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(32)
+█ G      █    G[2]{2,3}(110)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(32)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(32)
+			Result: E[0]{2,2}(29)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(29) wants to fight.
+		Unit E[0]{2,2}(29) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(110)
+				Target is valid.
+		Unit E[0]{2,2}(29) decides to fight: G[2]{2,3}(110)
+			Result: G[2]{2,3}(107)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(107) wants to fight.
+		Unit G[2]{2,3}(107) has 1 possible targets.
+			Possible Target: E[0]{2,2}(29)
+				Target is valid.
+		Unit G[2]{2,3}(107) decides to fight: E[0]{2,2}(29)
+			Result: E[0]{2,2}(26)
+
+
+After round 31:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(26)
+█ G      █    G[2]{2,3}(107)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(26)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(26)
+			Result: E[0]{2,2}(23)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(23) wants to fight.
+		Unit E[0]{2,2}(23) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(107)
+				Target is valid.
+		Unit E[0]{2,2}(23) decides to fight: G[2]{2,3}(107)
+			Result: G[2]{2,3}(104)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(104) wants to fight.
+		Unit G[2]{2,3}(104) has 1 possible targets.
+			Possible Target: E[0]{2,2}(23)
+				Target is valid.
+		Unit G[2]{2,3}(104) decides to fight: E[0]{2,2}(23)
+			Result: E[0]{2,2}(20)
+
+
+After round 32:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(20)
+█ G      █    G[2]{2,3}(104)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(20)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(20)
+			Result: E[0]{2,2}(17)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(17) wants to fight.
+		Unit E[0]{2,2}(17) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(104)
+				Target is valid.
+		Unit E[0]{2,2}(17) decides to fight: G[2]{2,3}(104)
+			Result: G[2]{2,3}(101)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(101) wants to fight.
+		Unit G[2]{2,3}(101) has 1 possible targets.
+			Possible Target: E[0]{2,2}(17)
+				Target is valid.
+		Unit G[2]{2,3}(101) decides to fight: E[0]{2,2}(17)
+			Result: E[0]{2,2}(14)
+
+
+After round 33:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(14)
+█ G      █    G[2]{2,3}(101)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(14)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(14)
+			Result: E[0]{2,2}(11)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(11) wants to fight.
+		Unit E[0]{2,2}(11) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(101)
+				Target is valid.
+		Unit E[0]{2,2}(11) decides to fight: G[2]{2,3}(101)
+			Result: G[2]{2,3}(98)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(98) wants to fight.
+		Unit G[2]{2,3}(98) has 1 possible targets.
+			Possible Target: E[0]{2,2}(11)
+				Target is valid.
+		Unit G[2]{2,3}(98) decides to fight: E[0]{2,2}(11)
+			Result: E[0]{2,2}(8)
+
+
+After round 34:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(8)
+█ G      █    G[2]{2,3}(98)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(8)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(8)
+			Result: E[0]{2,2}(5)
+
+	Unit 0 takes a turn.
+		Unit E[0]{2,2}(5) wants to fight.
+		Unit E[0]{2,2}(5) has 2 possible targets.
+			Possible Target: G[1]{2,1}(200)
+			Possible Target: G[2]{2,3}(98)
+				Target is valid.
+		Unit E[0]{2,2}(5) decides to fight: G[2]{2,3}(98)
+			Result: G[2]{2,3}(95)
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(95) wants to fight.
+		Unit G[2]{2,3}(95) has 1 possible targets.
+			Possible Target: E[0]{2,2}(5)
+				Target is valid.
+		Unit G[2]{2,3}(95) decides to fight: E[0]{2,2}(5)
+			Result: E[0]{2,2}(2)
+
+
+After round 35:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█ E    ███    E[0]{2,2}(2)
+█ G      █    G[2]{2,3}(95)
+██████████    
+
+
+
+Starting round.
+	Unit 1 takes a turn.
+		Unit G[1]{2,1}(200) wants to fight.
+		Unit G[1]{2,1}(200) has 1 possible targets.
+			Possible Target: E[0]{2,2}(2)
+				Target is valid.
+		Unit G[1]{2,1}(200) decides to fight: E[0]{2,2}(2)
+			Result: E[0]{2,2}(0)X
+
+	Unit 2 takes a turn.
+		Unit G[2]{2,3}(95) sees no targets.
+
+Combat ended before round 36 completed:
+██████████    
+█ G      █    G[1]{2,1}(200)
+█      ███    
+█ G      █    G[2]{2,3}(95)
+██████████    
+
+
+
+Part 1: 10325 (295 x 35)
