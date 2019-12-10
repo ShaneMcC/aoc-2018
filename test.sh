@@ -13,8 +13,8 @@ for DAY in `seq 1 25`; do
 				PART2=$(cat ${DAY}/answers.txt | head -n 2 | tail -n 1)
 			fi;
 
-			RESULT=$(${DAY}/run.php 2>/dev/null | grep -Pzl ".*${PART1}.*\n.*${PART2}.*")
-			# RESULT=$(./docker.sh ${DAY} 2>/dev/null | grep -Pzl ".*${PART1}.*\n.*${PART2}.*")
+			RESULT=$(${DAY}/run.php 2>/dev/null | grep -Pzl "(?s).*${PART1}.*\n.*${PART2}.*")
+			# RESULT=$(./docker.sh ${DAY} 2>/dev/null | grep -Pzl "(?s).*${PART1}.*\n.*${PART2}.*")
 
 			if [ "${RESULT}" = "" ]; then
 				echo -e "\033[1;31m" "Fail." "\033[0m";
