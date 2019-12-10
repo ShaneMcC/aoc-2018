@@ -1,11 +1,12 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['id', 'part1', 'part2', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot', 'peaceful', 'max', 'fullscan', 'nooptions'];
+	$__CLI['long'] = ['id', 'part1', 'part2', 'onlymap', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot', 'peaceful', 'max', 'fullscan', 'nooptions'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --nocolour           Don\'t include colours in output';
 	$__CLI['extrahelp'][] = '      --hashdot            Use # and . in cave output';
 	$__CLI['extrahelp'][] = '      --id                 Include Elf IDs in debug output';
 	$__CLI['extrahelp'][] = '      --xy                 Include Elf XY in debug output';
+	$__CLI['extrahelp'][] = '      --onlymap            Only show maps not extra data in debug';
 	$__CLI['extrahelp'][] = '      --part1              run part 1';
 	$__CLI['extrahelp'][] = '      --part2              run part 2';
 	$__CLI['extrahelp'][] = '      --debugturn          debug each individual turn';
@@ -421,7 +422,11 @@
 				}
 			}
 
-			echo '    ', implode(' ', $lineCharacters), "\n";
+			if (!isset($__CLIOPTS['onlymap'])) {
+				echo '    ', implode(' ', $lineCharacters), "\n";
+			} else {
+				echo "\n";
+			}
 		}
 	}
 
