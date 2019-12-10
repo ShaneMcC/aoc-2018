@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 for DAY in `seq 1 25`; do
 	if [ -e ${DAY} ]; then
 		echo -n "Day ${DAY}:"
-		if [ -e ${DAY}/answers.txt -a $(cat ${DAY}/answers.txt | wc -l) -ne 0 ]; then
+		if [ -e ${DAY}/answers.txt -a $(cat ${DAY}/answers.txt 2>/dev/null | wc -l) -ne 0 ]; then
 			PART1=$(cat ${DAY}/answers.txt | head -n 1)
 			if [ $(cat ${DAY}/answers.txt | wc -l) -eq 1 ]; then
 				PART2=""
