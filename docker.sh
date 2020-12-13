@@ -1,25 +1,43 @@
 #!/bin/bash
 
-IMAGE=shanemcc/aoc-2018-04
-DOCKERFILE="Dockerfile"
+BASEIMAGE=shanemcc/aoc-2018-05
+BASEDOCKERFILE="Dockerfile"
 
-if [ "${1}" = "--jit" ]; then
-	IMAGE="${IMAGE}-jit"
-	DOCKERFILE="${DOCKERFILE}-jit"
-	shift;
-elif [ "${1}" = "--hhvm" ]; then
-	IMAGE="${IMAGE}-hhvm"
-	DOCKERFILE="${DOCKERFILE}-hhvm"
-	shift;
-fi;
+IMAGE=${BASEIMAGE}
+DOCKERFILE=${BASEDOCKERFILE}
+FORCEBUILD="0";
+SHELL="0";
+
+while true; do
+	case "$1" in
+		--jit|--hhvm)
+			IMAGE=${BASEIMAGE}-${1/--/}
+			DOCKERFILE=${BASEDOCKERFILE}-${1/--/}
+			;;
+		--build)
+			FORCEBUILD="1";
+			;;
+		--shell)
+			SHELL="1";
+			;;
+		*)
+			break;
+			;;
+	esac
+	shift
+done
 
 docker image inspect $IMAGE >/dev/null 2>&1
-if [ $? -ne 0 ]
-then
-    echo "One time setup: building docker image ${IMAGE}..."
-    cd docker
-    docker build . -t $IMAGE --file ${DOCKERFILE}
-    cd ..
+if [ $? -ne 0 -o ${FORCEBUILD} = "1" ]; then
+	echo "One time setup: building docker image ${IMAGE}..."
+	cd docker
+	docker build . -t $IMAGE --file ${DOCKERFILE}
+	cd ..
+	echo "Image build complete."
 fi
 
-docker run --rm -it -v $(pwd):/code $IMAGE /entrypoint.sh $@
+if [ "${SHELL}" = "1" ]; then
+	docker run --rm -it -v $(pwd):/code $IMAGE bash
+else
+	docker run --rm -it -v $(pwd):/code $IMAGE /entrypoint.sh $@
+fi;
