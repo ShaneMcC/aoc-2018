@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$(dirname "$0")"
+
 BASEIMAGE=shanemcc/aoc-2018-05
 BASEDOCKERFILE="Dockerfile"
 
@@ -10,7 +12,7 @@ SHELL="0";
 
 while true; do
 	case "$1" in
-		--jit|--hhvm)
+		--php7|--jit|--hhvm)
 			IMAGE=${BASEIMAGE}-${1/--/}
 			DOCKERFILE=${BASEDOCKERFILE}-${1/--/}
 			;;
