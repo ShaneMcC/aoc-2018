@@ -30,9 +30,9 @@ for DAY in `seq 1 25`; do
 
 			REGEX="(?s).*${PART1}.*\n.*${PART2}.*"
 			if [ ${CANGREP} -eq 0 ]; then
-				RESULT=$(${DAY}/run.php 2>/dev/null | grep -Pzl "(?s)${REGEX}")
+				RESULT=$(php ${DAY}/run.php 2>/dev/null | grep -Pzl "(?s)${REGEX}")
 			else
-				RESULT=$(${DAY}/run.php 2>/dev/null | php -r 'echo preg_match("#'"${REGEX}"'#im", file_get_contents("php://STDIN")) ? "Yes" : "";')
+				RESULT=$(php ${DAY}/run.php 2>/dev/null | php -r 'echo preg_match("#'"${REGEX}"'#im", file_get_contents("php://STDIN")) ? "Yes" : "";')
 			fi;
 
 			if [ "${RESULT}" = "" ]; then
