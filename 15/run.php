@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-	$__CLI['long'] = ['id', 'part1', 'part2', 'onlymap', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot', 'peaceful', 'max', 'fullscan', 'nooptions'];
+	$__CLI['long'] = ['id', 'part1', 'part2', 'onlymap', 'custom', 'eap:', 'ehp:', 'gap:', 'ghp:', 'break', 'debugturn', 'turndebug', 'xy', 'nocolour', 'hashdot', 'peaceful', 'max:', 'fullscan', 'nooptions'];
 	$__CLI['extrahelp'] = [];
 	$__CLI['extrahelp'][] = '      --nocolour           Don\'t include colours in output';
 	$__CLI['extrahelp'][] = '      --hashdot            Use # and . in cave output';
